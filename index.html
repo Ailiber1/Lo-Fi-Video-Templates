@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lo-Fi Video Templates</title>
+  <title>Lo-Fi Video Templates - Free Lo-Fi Video Backgrounds</title>
   <style>
     /* ======================================================
        デザイントークン（CSS変数）
@@ -402,11 +402,23 @@
        ヘッダースタイル
        ====================================================== */
     .logo {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text-primary);
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
       text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .logo-main {
+      font-size: 24px;
+      font-weight: 800;
       letter-spacing: -0.5px;
+    }
+
+    .logo-sub {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
     }
 
     .lang-toggle {
@@ -581,8 +593,12 @@
        レスポンシブ - 検索・フィルター
        ====================================================== */
     @media (max-width: 767px) {
-      .logo {
-        font-size: 18px;
+      .logo-main {
+        font-size: 20px;
+      }
+
+      .logo-sub {
+        font-size: 12px;
       }
 
       .lang-btn {
@@ -614,8 +630,12 @@
         padding: 12px var(--section-padding);
       }
 
-      .logo {
-        font-size: 16px;
+      .logo-main {
+        font-size: 18px;
+      }
+
+      .logo-sub {
+        font-size: 11px;
       }
 
       .search-container {
@@ -711,7 +731,10 @@
     <header class="header">
       <div class="header-inner">
         <!-- ロゴ -->
-        <a href="#" class="logo">Lo-Fi Gallery</a>
+        <a href="#" class="logo">
+          <span class="logo-main">Lo-Fi</span>
+          <span class="logo-sub">Video Templates</span>
+        </a>
 
         <!-- コントロールエリア -->
         <div class="header-controls">
