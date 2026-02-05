@@ -274,6 +274,16 @@
       object-fit: cover;
     }
 
+    /* YouTube埋め込み */
+    .card-thumbnail iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
     /* 再生ボタンオーバーレイ */
     .play-overlay {
       position: absolute;
@@ -968,10 +978,11 @@
         badge: 'new',
         thumbnailPath: '',
         previewPath: '',
-        // Streamable直接リンク（プレビュー用）
-        previewUrl: 'https://cdn.streamable.com/video/mp4/zjycva.mp4',
+        previewUrl: '',
+        // YouTube動画ID（視聴用）- URLの末尾のIDを入力 例: dQw4w9WgXcQ
+        youtubeId: '',
         downloadPath: '',
-        // Google Drive直接リンク（ダウンロード用）- フル動画のリンクをここに設定
+        // Google Drive直接リンク（ダウンロード用）
         downloadUrl: '',
         order: 2
       },
@@ -1449,11 +1460,23 @@
         badgeHtml = `<span class="card-badge new">${t('badge.new')}</span>`;
       }
 
-      // サムネイル/動画HTML（優先順位: 動画 > 画像 > プレースホルダー）
+      // サムネイル/動画HTML（優先順位: YouTube > 動画 > 画像 > プレースホルダー）
       let thumbnailHtml;
       let hasVideo = false;
+      let hasYoutube = false;
 
-      if (pkg.resolvedPreviewUrl) {
+      if (pkg.youtubeId) {
+        // YouTube埋め込みがある場合
+        hasYoutube = true;
+        thumbnailHtml = `
+          <iframe
+            src="https://www.youtube.com/embed/${pkg.youtubeId}?rel=0&modestbranding=1"
+            title="${title}"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+          </iframe>
+        `;
+      } else if (pkg.resolvedPreviewUrl) {
         // 動画プレビューがある場合
         hasVideo = true;
         thumbnailHtml = `
