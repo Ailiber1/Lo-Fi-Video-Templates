@@ -469,28 +469,27 @@
     }
 
     /* ======================================================
-       パッケージカード
+       パッケージカード - シンプルスタイル
        ====================================================== */
     .package-card {
-      background-color: var(--bg-card);
-      border-radius: var(--radius-card);
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      position: relative;
+      border-radius: 16px;
       overflow: hidden;
-      transition: box-shadow 0.3s ease, transform 0.3s ease;
       cursor: pointer;
+      transition: transform 0.3s ease;
     }
 
     .package-card:hover {
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-      transform: translateY(-6px);
+      transform: scale(1.02);
     }
 
     .card-thumbnail {
       position: relative;
       width: 100%;
-      padding-top: 56.25%;
+      padding-top: 75%; /* 4:3 アスペクト比 */
       overflow: hidden;
-      background: #1a1a1a;
+      background: #2a2a2a;
+      border-radius: 16px;
     }
 
     .card-thumbnail img,
@@ -503,38 +502,37 @@
       height: 100%;
       object-fit: cover;
       border: none;
+      border-radius: 16px;
     }
 
-    /* 再生ボタンオーバーレイ */
+    /* 再生ボタン - 左下に配置 */
     .play-overlay {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0, 0, 0, 0.25);
+      bottom: 12px;
+      left: 12px;
+      width: auto;
+      height: auto;
+      background: transparent;
       opacity: 1;
       transition: opacity 0.3s ease;
     }
 
     .play-icon {
-      width: 50px;
-      height: 50px;
-      background: rgba(255, 255, 255, 0.9);
+      width: 36px;
+      height: 36px;
+      background: rgba(255, 255, 255, 0.95);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
-      color: var(--text-primary);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      font-size: 12px;
+      color: #333;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease;
     }
 
-    .package-card:hover .play-overlay {
-      opacity: 0;
+    .package-card:hover .play-icon {
+      transform: scale(1.1);
     }
 
     .card-placeholder {
@@ -547,6 +545,7 @@
       align-items: center;
       justify-content: center;
       font-size: 48px;
+      border-radius: 16px;
     }
 
     /* ジャンル別プレースホルダー配色 */
@@ -569,83 +568,39 @@
       background: linear-gradient(135deg, #AD8B6B 0%, #C8A88B 100%);
     }
 
-    /* バッジ */
+    /* バッジ - 非表示（シンプルデザイン） */
     .card-badge {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      padding: 2px 10px;
-      border-radius: var(--radius-badge);
-      font-size: 12px;
-      font-weight: 600;
-      color: #FFFFFF;
-      z-index: 1;
+      display: none;
     }
 
-    .card-badge.popular { background-color: var(--badge-popular-bg); }
-    .card-badge.new { background-color: var(--badge-new-bg); }
-
-    /* カード本文 */
+    /* カード本文 - コンパクト */
     .card-body {
-      padding: 16px;
+      padding: 12px 4px;
     }
 
     .card-title {
-      font-size: 15px;
-      font-weight: 600;
+      font-size: 14px;
+      font-weight: 500;
       color: var(--text-primary);
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
 
     .card-info {
-      font-size: 13px;
-      color: var(--text-secondary);
-      margin-bottom: 12px;
-    }
-
-    .card-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 14px;
-    }
-
-    .card-tag {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: var(--radius-tag);
       font-size: 12px;
-      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 0;
     }
 
-    /* ジャンル別タグ配色 */
-    .card-tag[data-genre="rain"] { background-color: rgba(107, 143, 173, 0.15); color: var(--genre-rain); }
-    .card-tag[data-genre="fire"] { background-color: rgba(192, 112, 64, 0.15); color: var(--genre-fire); }
-    .card-tag[data-genre="anime"] { background-color: rgba(139, 107, 173, 0.15); color: var(--genre-anime); }
-    .card-tag[data-genre="study"] { background-color: rgba(122, 173, 107, 0.15); color: var(--genre-study); }
-    .card-tag[data-genre="night"] { background-color: rgba(74, 85, 128, 0.15); color: var(--genre-night); }
-    .card-tag[data-genre="chill"] { background-color: rgba(173, 139, 107, 0.15); color: var(--genre-chill); }
+    /* タグとダウンロードボタンは非表示（シンプルデザイン） */
+    .card-tags {
+      display: none;
+    }
 
-    /* ダウンロードボタン */
     .card-download-btn {
-      width: 100%;
-      padding: 10px 16px;
-      background-color: var(--accent-copper);
-      border: none;
-      border-radius: var(--radius-button);
-      font-size: 14px;
-      font-weight: 600;
-      font-family: var(--font-family);
-      color: #FFFFFF;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-
-    .card-download-btn:hover {
-      background-color: var(--accent-copper-hover);
+      display: none;
     }
 
     /* ======================================================
@@ -1379,51 +1334,40 @@
       const primaryGenre = pkg.genres[0] || 'chill';
       const emoji = GENRE_EMOJI[primaryGenre] || '🎵';
 
-      let badgeHtml = '';
-      if (pkg.badge === 'popular') badgeHtml = `<span class="card-badge popular">${t('badge.popular')}</span>`;
-      else if (pkg.badge === 'new') badgeHtml = `<span class="card-badge new">${t('badge.new')}</span>`;
-
       let thumbnailHtml;
       let hasVideo = false;
+      const playIconHtml = `<div class="play-overlay"><div class="play-icon">▶</div></div>`;
 
       if (pkg.youtubeId) {
-        thumbnailHtml = `<iframe src="https://www.youtube.com/embed/${pkg.youtubeId}?rel=0&modestbranding=1" title="${title}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+        // YouTubeサムネイルを使用（埋め込みではなく画像）
+        thumbnailHtml = `<img src="https://img.youtube.com/vi/${pkg.youtubeId}/maxresdefault.jpg" alt="${title}" loading="lazy">${playIconHtml}`;
       } else if (pkg.resolvedPreviewUrl) {
         hasVideo = true;
-        thumbnailHtml = `<video muted loop playsinline preload="metadata"><source src="${pkg.resolvedPreviewUrl}" type="video/mp4"></video><div class="play-overlay"><div class="play-icon">▶</div></div>`;
+        thumbnailHtml = `<video muted loop playsinline preload="metadata"><source src="${pkg.resolvedPreviewUrl}" type="video/mp4"></video>${playIconHtml}`;
       } else if (pkg.resolvedThumbnailUrl) {
-        thumbnailHtml = `<img src="${pkg.resolvedThumbnailUrl}" alt="${title}" loading="lazy">`;
+        thumbnailHtml = `<img src="${pkg.resolvedThumbnailUrl}" alt="${title}" loading="lazy">${playIconHtml}`;
       } else {
-        thumbnailHtml = `<div class="card-placeholder" data-genre="${primaryGenre}">${emoji}</div>`;
+        thumbnailHtml = `<div class="card-placeholder" data-genre="${primaryGenre}">${emoji}</div>${playIconHtml}`;
       }
 
-      const tagsHtml = pkg.genres.map(g => `<span class="card-tag" data-genre="${g}">${t(`genres.${g}`)}</span>`).join('');
-
       card.innerHTML = `
-        <div class="card-thumbnail">${badgeHtml}${thumbnailHtml}</div>
+        <div class="card-thumbnail">${thumbnailHtml}</div>
         <div class="card-body">
           <h3 class="card-title">${title}</h3>
-          <div class="card-info">⏱ ${pkg.durationMinutes || 60}${t('duration')} 💾 ${pkg.size || '1.0GB'}</div>
-          <div class="card-tags">${tagsHtml}</div>
-          <button type="button" class="card-download-btn" data-id="${pkg.id}">${t('downloadBtn')}</button>
+          <div class="card-info">${pkg.durationMinutes || 60}${t('duration')}</div>
         </div>
       `;
-
-      card.querySelector('.card-download-btn').addEventListener('click', e => { e.stopPropagation(); handleDownload(pkg.id); });
 
       if (hasVideo) {
         const video = card.querySelector('video');
         video.addEventListener('error', () => {
-          card.querySelector('.card-thumbnail').innerHTML = `${badgeHtml}<div class="card-placeholder" data-genre="${primaryGenre}">${emoji}</div>`;
+          card.querySelector('.card-thumbnail').innerHTML = `<div class="card-placeholder" data-genre="${primaryGenre}">${emoji}</div>${playIconHtml}`;
         });
         card.addEventListener('mouseenter', () => video.play().catch(() => {}));
         card.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
       }
 
-      card.addEventListener('click', e => {
-        if (e.target.closest('iframe') || e.target.closest('.card-download-btn')) return;
-        openModal(pkg.id);
-      });
+      card.addEventListener('click', () => openModal(pkg.id));
 
       return card;
     }
