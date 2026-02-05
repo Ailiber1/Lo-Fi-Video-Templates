@@ -173,6 +173,78 @@
     }
 
     /* ======================================================
+       検索バースタイル
+       ====================================================== */
+    .search-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .search-input {
+      width: 100%;
+      max-width: 600px;
+      padding: 14px 24px;
+      font-size: 15px;
+      font-family: var(--font-family);
+      background-color: var(--search-bg);
+      border: 1px solid var(--search-border);
+      border-radius: var(--radius-search);
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .search-input::placeholder {
+      color: var(--text-secondary);
+    }
+
+    .search-input:focus {
+      border-color: var(--search-border-focus);
+      box-shadow: 0 0 0 3px rgba(91, 155, 213, 0.15);
+    }
+
+    /* ======================================================
+       ジャンルフィルタースタイル
+       ====================================================== */
+    .genre-filter {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .genre-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: var(--font-family);
+      background-color: var(--genre-btn-bg);
+      border: 1px solid var(--genre-btn-border);
+      border-radius: var(--radius-button);
+      color: var(--genre-btn-text);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .genre-btn:hover {
+      border-color: var(--text-secondary);
+    }
+
+    .genre-btn.active {
+      background-color: var(--genre-btn-active-bg);
+      border-color: var(--genre-btn-active-bg);
+      color: var(--genre-btn-active-text);
+    }
+
+    .genre-btn .emoji {
+      font-size: 16px;
+    }
+
+    /* ======================================================
        レスポンシブ基本設定
        ====================================================== */
     @media (max-width: 1199px) {
@@ -192,6 +264,72 @@
       :root {
         --section-padding: 12px;
         --grid-gap: 12px;
+      }
+    }
+
+    /* ======================================================
+       レスポンシブ - 検索・フィルター
+       ====================================================== */
+    @media (max-width: 767px) {
+      .logo {
+        font-size: 18px;
+      }
+
+      .lang-btn {
+        padding: 5px 10px;
+        font-size: 12px;
+      }
+
+      .search-input {
+        padding: 12px 20px;
+        font-size: 14px;
+      }
+
+      .genre-filter {
+        gap: 8px;
+      }
+
+      .genre-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+      }
+
+      .genre-btn .emoji {
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 479px) {
+      .header {
+        padding: 12px var(--section-padding);
+      }
+
+      .logo {
+        font-size: 16px;
+      }
+
+      .search-container {
+        margin-bottom: 16px;
+      }
+
+      .search-input {
+        padding: 10px 16px;
+        font-size: 14px;
+        border-radius: 20px;
+      }
+
+      .genre-filter {
+        gap: 6px;
+      }
+
+      .genre-btn {
+        padding: 6px 10px;
+        font-size: 12px;
+        border-radius: 16px;
+      }
+
+      .genre-btn .emoji {
+        font-size: 13px;
       }
     }
   </style>
@@ -216,7 +354,44 @@
     <main class="main-content">
       <!-- 検索・フィルターエリア -->
       <section class="search-filter-area">
-        <!-- ステップ3で実装: 検索バー + ジャンルフィルター -->
+        <!-- 検索バー -->
+        <div class="search-container">
+          <input
+            type="text"
+            class="search-input"
+            id="search-input"
+            placeholder="キーワードで検索"
+            data-i18n-placeholder="searchPlaceholder"
+          >
+        </div>
+
+        <!-- ジャンルフィルター -->
+        <div class="genre-filter" id="genre-filter">
+          <button type="button" class="genre-btn" data-genre="rain">
+            <span class="emoji">🌧️</span>
+            <span data-i18n="genres.rain">雨</span>
+          </button>
+          <button type="button" class="genre-btn" data-genre="fire">
+            <span class="emoji">🔥</span>
+            <span data-i18n="genres.fire">火</span>
+          </button>
+          <button type="button" class="genre-btn" data-genre="anime">
+            <span class="emoji">🎬</span>
+            <span data-i18n="genres.anime">アニメ</span>
+          </button>
+          <button type="button" class="genre-btn" data-genre="study">
+            <span class="emoji">📚</span>
+            <span data-i18n="genres.study">勉強</span>
+          </button>
+          <button type="button" class="genre-btn" data-genre="night">
+            <span class="emoji">🌙</span>
+            <span data-i18n="genres.night">夜</span>
+          </button>
+          <button type="button" class="genre-btn" data-genre="chill">
+            <span class="emoji">☕</span>
+            <span data-i18n="genres.chill">チル</span>
+          </button>
+        </div>
       </section>
 
       <!-- カードグリッドエリア -->
