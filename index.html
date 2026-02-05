@@ -642,14 +642,256 @@
 
       <!-- カードグリッドエリア -->
       <section class="cards-area" id="cards-container">
-        <!-- ステップ4で実装: パッケージカード -->
+        <!-- JavaScriptで動的に描画 -->
       </section>
     </main>
   </div>
 
-  <!-- ステップ5以降で実装: JavaScript -->
+  <!-- JavaScript -->
   <script type="module">
-    // Firebase SDKとロジックはステップ8で実装
+    // ======================================================
+    // ジャンル定義（絵文字マッピング）
+    // ======================================================
+    const GENRE_EMOJI = {
+      rain: '🌧️',
+      fire: '🔥',
+      anime: '🎬',
+      study: '📚',
+      night: '🌙',
+      chill: '☕'
+    };
+
+    // ======================================================
+    // フォールバック用ローカルデータ（Firebase接続失敗時に使用）
+    // ======================================================
+    const LOCAL_PACKAGES = [
+      {
+        id: 'pkg-001',
+        title_ja: '雨音×Lo-Fi 作業用',
+        title_en: 'Rain×Lo-Fi Work BGM',
+        duration: 60,
+        fileSize: '1.2GB',
+        genres: ['rain', 'study'],
+        badge: 'popular',
+        thumbnailUrl: null
+      },
+      {
+        id: 'pkg-002',
+        title_ja: '焚き火×Lo-Fi 癒し系',
+        title_en: 'Bonfire×Lo-Fi Healing',
+        duration: 45,
+        fileSize: '900MB',
+        genres: ['fire', 'chill'],
+        badge: 'new',
+        thumbnailUrl: null
+      },
+      {
+        id: 'pkg-003',
+        title_ja: '夜の街×Lo-Fi 散歩用',
+        title_en: 'Night City×Lo-Fi Walk',
+        duration: 90,
+        fileSize: '1.5GB',
+        genres: ['night', 'anime'],
+        badge: 'popular',
+        thumbnailUrl: null
+      },
+      {
+        id: 'pkg-004',
+        title_ja: 'カフェ×Lo-Fi 読書用',
+        title_en: 'Cafe×Lo-Fi Reading',
+        duration: 60,
+        fileSize: '1.1GB',
+        genres: ['chill', 'study'],
+        badge: 'new',
+        thumbnailUrl: null
+      },
+      {
+        id: 'pkg-005',
+        title_ja: '雨音×Lo-Fi 作業用',
+        title_en: 'Rain×Lo-Fi Focus',
+        duration: 60,
+        fileSize: '1.2GB',
+        genres: ['rain', 'study'],
+        badge: null,
+        thumbnailUrl: null
+      },
+      {
+        id: 'pkg-006',
+        title_ja: '焚き火×Lo-Fi 癒し系',
+        title_en: 'Bonfire×Lo-Fi Relax',
+        duration: 45,
+        fileSize: '900MB',
+        genres: ['fire', 'chill'],
+        badge: null,
+        thumbnailUrl: null
+      },
+      {
+        id: 'pkg-007',
+        title_ja: '夜の街×Lo-Fi 散歩用',
+        title_en: 'Night City×Lo-Fi Ambient',
+        duration: 90,
+        fileSize: '1.5GB',
+        genres: ['night', 'anime'],
+        badge: null,
+        thumbnailUrl: null
+      },
+      {
+        id: 'pkg-008',
+        title_ja: 'こたつ×Lo-Fi 読書用',
+        title_en: 'Kotatsu×Lo-Fi Reading',
+        duration: 60,
+        fileSize: '1.1GB',
+        genres: ['chill', 'study'],
+        badge: 'new',
+        thumbnailUrl: null
+      }
+    ];
+
+    // ======================================================
+    // アプリケーション状態
+    // ======================================================
+    const state = {
+      packages: [],
+      filteredPackages: [],
+      selectedGenres: [],
+      searchQuery: '',
+      currentLang: 'ja'
+    };
+
+    // ======================================================
+    // DOM要素
+    // ======================================================
+    const cardsContainer = document.getElementById('cards-container');
+
+    // ======================================================
+    // カード描画関数
+    // ======================================================
+    function renderCards(packages) {
+      // コンテナをクリア
+      cardsContainer.innerHTML = '';
+
+      // 空状態チェック
+      if (packages.length === 0) {
+        const emptyMsg = document.createElement('div');
+        emptyMsg.className = 'empty-message';
+        emptyMsg.setAttribute('data-i18n', 'emptyMessage');
+        emptyMsg.textContent = state.currentLang === 'ja'
+          ? '該当するパッケージがありません'
+          : 'No packages found';
+        cardsContainer.appendChild(emptyMsg);
+        return;
+      }
+
+      // 各パッケージのカードを生成
+      packages.forEach(pkg => {
+        const card = createCardElement(pkg);
+        cardsContainer.appendChild(card);
+      });
+    }
+
+    // ======================================================
+    // カード要素生成関数
+    // ======================================================
+    function createCardElement(pkg) {
+      const card = document.createElement('article');
+      card.className = 'package-card';
+      card.dataset.id = pkg.id;
+
+      // タイトル（言語に応じて切替）
+      const title = state.currentLang === 'ja' ? pkg.title_ja : pkg.title_en;
+
+      // 主要ジャンル（プレースホルダー用）
+      const primaryGenre = pkg.genres[0] || 'chill';
+
+      // バッジHTML
+      let badgeHtml = '';
+      if (pkg.badge === 'popular') {
+        badgeHtml = `<span class="card-badge popular" data-i18n="badge.popular">人気</span>`;
+      } else if (pkg.badge === 'new') {
+        badgeHtml = `<span class="card-badge new" data-i18n="badge.new">新作</span>`;
+      }
+
+      // サムネイルHTML（画像URLがあれば画像、なければプレースホルダー）
+      let thumbnailHtml;
+      if (pkg.thumbnailUrl) {
+        thumbnailHtml = `<img src="${pkg.thumbnailUrl}" alt="${title}" loading="lazy">`;
+      } else {
+        const emoji = GENRE_EMOJI[primaryGenre] || '🎵';
+        thumbnailHtml = `<div class="card-placeholder" data-genre="${primaryGenre}">${emoji}</div>`;
+      }
+
+      // ジャンルタグHTML
+      const tagsHtml = pkg.genres.map(genre => {
+        const genreLabel = state.currentLang === 'ja'
+          ? getGenreLabelJa(genre)
+          : getGenreLabelEn(genre);
+        return `<span class="card-tag" data-genre="${genre}">${genreLabel}</span>`;
+      }).join('');
+
+      // ダウンロードボタンテキスト
+      const downloadText = state.currentLang === 'ja' ? 'ダウンロード' : 'Download';
+
+      // カードHTML組み立て
+      card.innerHTML = `
+        <div class="card-thumbnail">
+          ${badgeHtml}
+          ${thumbnailHtml}
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">${title}</h3>
+          <div class="card-info">⏱ ${pkg.duration}分 💾 ${pkg.fileSize}</div>
+          <div class="card-tags">${tagsHtml}</div>
+          <button type="button" class="card-download-btn" data-id="${pkg.id}" data-i18n="downloadBtn">
+            ${downloadText}
+          </button>
+        </div>
+      `;
+
+      return card;
+    }
+
+    // ======================================================
+    // ジャンルラベル取得（JA）
+    // ======================================================
+    function getGenreLabelJa(genre) {
+      const labels = {
+        rain: '雨',
+        fire: '火',
+        anime: 'アニメ',
+        study: '勉強',
+        night: '夜',
+        chill: 'チル'
+      };
+      return labels[genre] || genre;
+    }
+
+    // ======================================================
+    // ジャンルラベル取得（EN）
+    // ======================================================
+    function getGenreLabelEn(genre) {
+      const labels = {
+        rain: 'Rain',
+        fire: 'Fire',
+        anime: 'Anime',
+        study: 'Study',
+        night: 'Night',
+        chill: 'Chill'
+      };
+      return labels[genre] || genre;
+    }
+
+    // ======================================================
+    // 初期化
+    // ======================================================
+    function init() {
+      // ローカルデータで初期表示
+      state.packages = LOCAL_PACKAGES;
+      state.filteredPackages = [...state.packages];
+      renderCards(state.filteredPackages);
+    }
+
+    // DOM読み込み完了後に初期化
+    document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>
