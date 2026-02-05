@@ -650,6 +650,33 @@
   <!-- JavaScript -->
   <script type="module">
     // ======================================================
+    // Firebase SDK インポート（CDN）
+    // ======================================================
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, orderBy }
+      from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+    import { getStorage, ref, getDownloadURL }
+      from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
+
+    // ======================================================
+    // Firebase 設定（ここを書き換えるだけで接続先変更）
+    // ======================================================
+    const FIREBASE_CONFIG = {
+      apiKey: "",            // ← 自分のキーを入力
+      authDomain: "",        // ← 自分のドメインを入力
+      projectId: "",         // ← 自分のIDを入力
+      storageBucket: "",     // ← 自分のバケットを入力
+      messagingSenderId: "", // ← 自分のIDを入力
+      appId: ""              // ← 自分のIDを入力
+    };
+    // 上記が空 or 無効 → 自動でフォールバックモードになる
+    // ======================================================
+
+    // Firebase インスタンス（設定有効時のみ初期化）
+    let db = null;
+    let storage = null;
+
+    // ======================================================
     // ジャンル定義（絵文字マッピング）
     // ======================================================
     const GENRE_EMOJI = {
@@ -683,7 +710,8 @@
         emptyMessage: '該当するパッケージがありません',
         loading: '読み込み中...',
         error: 'データの読み込みに失敗しました',
-        duration: '分'
+        duration: '分',
+        comingSoon: '準備中です。もうしばらくお待ちください。'
       },
       en: {
         searchPlaceholder: 'Search by keyword',
@@ -703,7 +731,8 @@
         emptyMessage: 'No packages found',
         loading: 'Loading...',
         error: 'Failed to load data',
-        duration: 'min'
+        duration: 'min',
+        comingSoon: 'Coming soon. Please wait.'
       }
     };
 
@@ -712,84 +741,100 @@
     // ======================================================
     const LOCAL_PACKAGES = [
       {
-        id: 'pkg-001',
+        id: 'rain-lofi-work',
         title_ja: '雨音×Lo-Fi 作業用',
-        title_en: 'Rain×Lo-Fi Work BGM',
-        duration: 60,
-        fileSize: '1.2GB',
+        title_en: 'Rain × Lo-Fi Work',
         genres: ['rain', 'study'],
+        durationMinutes: 60,
+        size: '1.2GB',
         badge: 'popular',
-        thumbnailUrl: null
+        thumbnailPath: '',
+        downloadPath: '',
+        order: 1
       },
       {
-        id: 'pkg-002',
+        id: 'fire-lofi-healing',
         title_ja: '焚き火×Lo-Fi 癒し系',
-        title_en: 'Bonfire×Lo-Fi Healing',
-        duration: 45,
-        fileSize: '900MB',
+        title_en: 'Bonfire × Lo-Fi Healing',
         genres: ['fire', 'chill'],
+        durationMinutes: 60,
+        size: '900MB',
         badge: 'new',
-        thumbnailUrl: null
+        thumbnailPath: '',
+        downloadPath: '',
+        order: 2
       },
       {
-        id: 'pkg-003',
+        id: 'night-city-lofi',
         title_ja: '夜の街×Lo-Fi 散歩用',
-        title_en: 'Night City×Lo-Fi Walk',
-        duration: 90,
-        fileSize: '1.5GB',
+        title_en: 'Night City × Lo-Fi Walk',
         genres: ['night', 'anime'],
+        durationMinutes: 60,
+        size: '1.5GB',
         badge: 'popular',
-        thumbnailUrl: null
+        thumbnailPath: '',
+        downloadPath: '',
+        order: 3
       },
       {
-        id: 'pkg-004',
+        id: 'cafe-lofi-reading',
         title_ja: 'カフェ×Lo-Fi 読書用',
-        title_en: 'Cafe×Lo-Fi Reading',
-        duration: 60,
-        fileSize: '1.1GB',
-        genres: ['chill', 'study'],
-        badge: 'new',
-        thumbnailUrl: null
-      },
-      {
-        id: 'pkg-005',
-        title_ja: '雨音×Lo-Fi 作業用',
-        title_en: 'Rain×Lo-Fi Focus',
-        duration: 60,
-        fileSize: '1.2GB',
+        title_en: 'Café × Lo-Fi Reading',
         genres: ['rain', 'study'],
-        badge: null,
-        thumbnailUrl: null
-      },
-      {
-        id: 'pkg-006',
-        title_ja: '焚き火×Lo-Fi 癒し系',
-        title_en: 'Bonfire×Lo-Fi Relax',
-        duration: 45,
-        fileSize: '900MB',
-        genres: ['fire', 'chill'],
-        badge: null,
-        thumbnailUrl: null
-      },
-      {
-        id: 'pkg-007',
-        title_ja: '夜の街×Lo-Fi 散歩用',
-        title_en: 'Night City×Lo-Fi Ambient',
-        duration: 90,
-        fileSize: '1.5GB',
-        genres: ['night', 'anime'],
-        badge: null,
-        thumbnailUrl: null
-      },
-      {
-        id: 'pkg-008',
-        title_ja: 'こたつ×Lo-Fi 読書用',
-        title_en: 'Kotatsu×Lo-Fi Reading',
-        duration: 60,
-        fileSize: '1.1GB',
-        genres: ['chill', 'study'],
+        durationMinutes: 60,
+        size: '1.1GB',
         badge: 'new',
-        thumbnailUrl: null
+        thumbnailPath: '',
+        downloadPath: '',
+        order: 4
+      },
+      {
+        id: 'sakura-lofi-spring',
+        title_ja: '桜×Lo-Fi 春の作業用',
+        title_en: 'Sakura × Lo-Fi Spring',
+        genres: ['chill', 'study'],
+        durationMinutes: 60,
+        size: '1.3GB',
+        badge: 'popular',
+        thumbnailPath: '',
+        downloadPath: '',
+        order: 5
+      },
+      {
+        id: 'forest-lofi-nature',
+        title_ja: '森林×Lo-Fi 自然音',
+        title_en: 'Forest × Lo-Fi Nature',
+        genres: ['rain', 'chill'],
+        durationMinutes: 60,
+        size: '1.0GB',
+        badge: 'new',
+        thumbnailPath: '',
+        downloadPath: '',
+        order: 6
+      },
+      {
+        id: 'ocean-lofi-waves',
+        title_ja: '海×Lo-Fi 波の音',
+        title_en: 'Ocean × Lo-Fi Waves',
+        genres: ['chill', 'night'],
+        durationMinutes: 60,
+        size: '1.4GB',
+        badge: 'popular',
+        thumbnailPath: '',
+        downloadPath: '',
+        order: 7
+      },
+      {
+        id: 'bedroom-lofi-sleep',
+        title_ja: 'ベッドルーム×Lo-Fi 睡眠用',
+        title_en: 'Bedroom × Lo-Fi Sleep',
+        genres: ['night', 'chill'],
+        durationMinutes: 60,
+        size: '1.1GB',
+        badge: 'new',
+        thumbnailPath: '',
+        downloadPath: '',
+        order: 8
       }
     ];
 
@@ -801,8 +846,95 @@
       filteredPackages: [],
       selectedGenres: [],
       searchQuery: '',
-      currentLang: 'ja'
+      currentLang: 'ja',
+      isLoading: false
     };
+
+    // ======================================================
+    // Firebase 設定チェック
+    // ======================================================
+    function isFirebaseConfigured() {
+      return FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.projectId;
+    }
+
+    // ======================================================
+    // Firebase 初期化
+    // ======================================================
+    function initializeFirebase() {
+      if (!isFirebaseConfigured()) return false;
+      try {
+        const app = initializeApp(FIREBASE_CONFIG);
+        db = getFirestore(app);
+        storage = getStorage(app);
+        return true;
+      } catch (e) {
+        console.warn('Firebase初期化失敗:', e);
+        return false;
+      }
+    }
+
+    // ======================================================
+    // データ取得（Firebase優先 → フォールバック）
+    // ======================================================
+    async function loadPackages() {
+      // 1. Firebase接続を試行
+      if (isFirebaseConfigured() && db) {
+        try {
+          const snapshot = await getDocs(
+            query(collection(db, 'packages'), orderBy('order'))
+          );
+          if (!snapshot.empty) {
+            const packages = snapshot.docs
+              .map(doc => doc.data())
+              .filter(pkg => pkg.visible !== false);
+            return packages;
+          }
+        } catch (e) {
+          console.warn('Firestore取得失敗、フォールバックへ:', e);
+        }
+      }
+
+      // 2. フォールバック: ローカルデータを返す
+      return LOCAL_PACKAGES;
+    }
+
+    // ======================================================
+    // サムネイルURL解決（Storage優先 → null）
+    // ======================================================
+    async function resolveThumbnail(pkg) {
+      if (pkg.thumbnailPath && isFirebaseConfigured() && storage) {
+        try {
+          return await getDownloadURL(ref(storage, pkg.thumbnailPath));
+        } catch (e) {
+          // ファイル未アップロード → nullに落ちる
+        }
+      }
+      return null; // → CSSプレースホルダー表示
+    }
+
+    // ======================================================
+    // ダウンロード処理
+    // ======================================================
+    async function handleDownload(pkgId) {
+      const pkg = state.packages.find(p => p.id === pkgId);
+      if (!pkg) return;
+
+      if (pkg.downloadPath && isFirebaseConfigured() && storage) {
+        try {
+          const url = await getDownloadURL(ref(storage, pkg.downloadPath));
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = '';
+          a.click();
+          return;
+        } catch (e) {
+          console.warn('DLファイル未設定:', pkg.id);
+        }
+      }
+
+      // フォールバック: 準備中メッセージ
+      alert(t('comingSoon'));
+    }
 
     // ======================================================
     // DOM要素
@@ -1002,10 +1134,10 @@
         badgeHtml = `<span class="card-badge new">${t('badge.new')}</span>`;
       }
 
-      // サムネイルHTML（画像URLがあれば画像、なければプレースホルダー）
+      // サムネイルHTML（resolvedThumbnailUrlがあれば画像、なければプレースホルダー）
       let thumbnailHtml;
-      if (pkg.thumbnailUrl) {
-        thumbnailHtml = `<img src="${pkg.thumbnailUrl}" alt="${title}" loading="lazy">`;
+      if (pkg.resolvedThumbnailUrl) {
+        thumbnailHtml = `<img src="${pkg.resolvedThumbnailUrl}" alt="${title}" loading="lazy">`;
       } else {
         const emoji = GENRE_EMOJI[primaryGenre] || '🎵';
         thumbnailHtml = `<div class="card-placeholder" data-genre="${primaryGenre}">${emoji}</div>`;
@@ -1017,6 +1149,10 @@
         return `<span class="card-tag" data-genre="${genre}">${genreLabel}</span>`;
       }).join('');
 
+      // 再生時間と容量
+      const duration = pkg.durationMinutes || 60;
+      const fileSize = pkg.size || '1.0GB';
+
       // カードHTML組み立て
       card.innerHTML = `
         <div class="card-thumbnail">
@@ -1025,7 +1161,7 @@
         </div>
         <div class="card-body">
           <h3 class="card-title">${title}</h3>
-          <div class="card-info">⏱ ${pkg.duration}${t('duration')} 💾 ${pkg.fileSize}</div>
+          <div class="card-info">⏱ ${duration}${t('duration')} 💾 ${fileSize}</div>
           <div class="card-tags">${tagsHtml}</div>
           <button type="button" class="card-download-btn" data-id="${pkg.id}">
             ${t('downloadBtn')}
@@ -1033,20 +1169,53 @@
         </div>
       `;
 
+      // ダウンロードボタンにイベントリスナーを追加
+      const downloadBtn = card.querySelector('.card-download-btn');
+      downloadBtn.addEventListener('click', () => handleDownload(pkg.id));
+
       return card;
+    }
+
+    // ======================================================
+    // サムネイルURL一括解決
+    // ======================================================
+    async function resolveAllThumbnails(packages) {
+      const resolved = await Promise.all(
+        packages.map(async (pkg) => {
+          const url = await resolveThumbnail(pkg);
+          return { ...pkg, resolvedThumbnailUrl: url };
+        })
+      );
+      return resolved;
     }
 
     // ======================================================
     // 初期化
     // ======================================================
-    function init() {
+    async function init() {
       // イベントリスナー設定
       setupEventListeners();
 
-      // ローカルデータで初期表示
-      state.packages = LOCAL_PACKAGES;
-      state.filteredPackages = [...state.packages];
-      renderCards(state.filteredPackages);
+      // Firebase初期化
+      initializeFirebase();
+
+      // データ読み込み
+      state.isLoading = true;
+      try {
+        const packages = await loadPackages();
+        // サムネイルURL解決
+        state.packages = await resolveAllThumbnails(packages);
+        state.filteredPackages = [...state.packages];
+        renderCards(state.filteredPackages);
+      } catch (e) {
+        console.error('データ読み込みエラー:', e);
+        // フォールバック
+        state.packages = LOCAL_PACKAGES;
+        state.filteredPackages = [...state.packages];
+        renderCards(state.filteredPackages);
+      } finally {
+        state.isLoading = false;
+      }
     }
 
     // DOM読み込み完了後に初期化
