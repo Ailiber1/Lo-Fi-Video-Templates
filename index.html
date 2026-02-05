@@ -173,7 +173,7 @@
        ====================================================== */
     .cards-area {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: var(--grid-gap);
     }
 
@@ -251,8 +251,9 @@
     .card-thumbnail {
       position: relative;
       width: 100%;
-      padding-top: 100%; /* 1:1 アスペクト比 */
+      padding-top: 56.25%; /* 16:9 アスペクト比（YouTubeスタイル） */
       overflow: hidden;
+      border-radius: var(--radius-card) var(--radius-card) 0 0;
     }
 
     .card-thumbnail img {
@@ -726,18 +727,29 @@
        ====================================================== */
     /* 1200px以上: 4列（デフォルト） */
 
-    /* 768px〜1199px: 3列 */
+    /* 900px〜1199px: 2列 */
     @media (max-width: 1199px) {
-      .cards-area {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-
-    /* 480px〜767px: 2列 */
-    @media (max-width: 767px) {
       .cards-area {
         grid-template-columns: repeat(2, 1fr);
       }
+    }
+
+    /* 480px〜899px: 2列 */
+    @media (max-width: 899px) {
+      .cards-area {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* 600px以下: 1列 */
+    @media (max-width: 600px) {
+      .cards-area {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* タブレット以下の調整 */
+    @media (max-width: 767px) {
 
       .card-body {
         padding: 12px;
@@ -771,12 +783,8 @@
       }
     }
 
-    /* 479px以下: 1列 */
+    /* 479px以下 */
     @media (max-width: 479px) {
-      .cards-area {
-        grid-template-columns: 1fr;
-      }
-
       .card-placeholder {
         font-size: 48px;
       }
