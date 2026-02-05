@@ -126,9 +126,194 @@
       margin-bottom: var(--grid-gap);
     }
 
-    /* カードグリッドエリア */
+    /* ======================================================
+       カードグリッドエリア
+       ====================================================== */
     .cards-area {
-      /* グリッドレイアウトはステップ4で実装 */
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--grid-gap);
+    }
+
+    /* 空状態メッセージ */
+    .empty-message {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-secondary);
+      font-size: 15px;
+    }
+
+    /* ======================================================
+       パッケージカードスタイル
+       ====================================================== */
+    .package-card {
+      background-color: var(--bg-card);
+      border-radius: var(--radius-card);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    .package-card:hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      transform: translateY(-2px);
+    }
+
+    /* サムネイルエリア */
+    .card-thumbnail {
+      position: relative;
+      width: 100%;
+      padding-top: 100%; /* 1:1 アスペクト比 */
+      overflow: hidden;
+    }
+
+    .card-thumbnail img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* プレースホルダーサムネイル */
+    .card-placeholder {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+    }
+
+    /* ジャンル別プレースホルダー配色 */
+    .card-placeholder[data-genre="rain"] {
+      background: linear-gradient(135deg, #6B8FAD 0%, #8BAFC8 100%);
+    }
+    .card-placeholder[data-genre="fire"] {
+      background: linear-gradient(135deg, #C07040 0%, #D49060 100%);
+    }
+    .card-placeholder[data-genre="anime"] {
+      background: linear-gradient(135deg, #8B6BAD 0%, #A88BC8 100%);
+    }
+    .card-placeholder[data-genre="study"] {
+      background: linear-gradient(135deg, #7AAD6B 0%, #98C88B 100%);
+    }
+    .card-placeholder[data-genre="night"] {
+      background: linear-gradient(135deg, #4A5580 0%, #6A75A0 100%);
+    }
+    .card-placeholder[data-genre="chill"] {
+      background: linear-gradient(135deg, #AD8B6B 0%, #C8A88B 100%);
+    }
+
+    /* バッジ */
+    .card-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 2px 10px;
+      border-radius: var(--radius-badge);
+      font-size: 12px;
+      font-weight: 600;
+      color: #FFFFFF;
+      z-index: 1;
+    }
+
+    .card-badge.popular {
+      background-color: var(--badge-popular-bg);
+    }
+
+    .card-badge.new {
+      background-color: var(--badge-new-bg);
+    }
+
+    /* カード本文エリア */
+    .card-body {
+      padding: 14px;
+    }
+
+    /* タイトル */
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* 情報行 */
+    .card-info {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+
+    /* ジャンルタグコンテナ */
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    /* ジャンルタグ */
+    .card-tag {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: var(--radius-tag);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    /* ジャンル別タグ配色 */
+    .card-tag[data-genre="rain"] {
+      background-color: rgba(107, 143, 173, 0.15);
+      color: var(--genre-rain);
+    }
+    .card-tag[data-genre="fire"] {
+      background-color: rgba(192, 112, 64, 0.15);
+      color: var(--genre-fire);
+    }
+    .card-tag[data-genre="anime"] {
+      background-color: rgba(139, 107, 173, 0.15);
+      color: var(--genre-anime);
+    }
+    .card-tag[data-genre="study"] {
+      background-color: rgba(122, 173, 107, 0.15);
+      color: var(--genre-study);
+    }
+    .card-tag[data-genre="night"] {
+      background-color: rgba(74, 85, 128, 0.15);
+      color: var(--genre-night);
+    }
+    .card-tag[data-genre="chill"] {
+      background-color: rgba(173, 139, 107, 0.15);
+      color: var(--genre-chill);
+    }
+
+    /* ダウンロードボタン */
+    .card-download-btn {
+      width: 100%;
+      padding: 10px 16px;
+      background-color: var(--accent-blue);
+      border: none;
+      border-radius: var(--radius-button);
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font-family);
+      color: #FFFFFF;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .card-download-btn:hover {
+      background-color: var(--accent-blue-hover);
     }
 
     /* ======================================================
@@ -330,6 +515,67 @@
 
       .genre-btn .emoji {
         font-size: 13px;
+      }
+    }
+
+    /* ======================================================
+       レスポンシブ - カードグリッド
+       ====================================================== */
+    /* 1200px以上: 4列（デフォルト） */
+
+    /* 768px〜1199px: 3列 */
+    @media (max-width: 1199px) {
+      .cards-area {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    /* 480px〜767px: 2列 */
+    @media (max-width: 767px) {
+      .cards-area {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .card-body {
+        padding: 12px;
+      }
+
+      .card-title {
+        font-size: 14px;
+      }
+
+      .card-info {
+        font-size: 12px;
+      }
+
+      .card-tags {
+        gap: 4px;
+        margin-bottom: 10px;
+      }
+
+      .card-tag {
+        font-size: 11px;
+        padding: 2px 8px;
+      }
+
+      .card-download-btn {
+        padding: 8px 12px;
+        font-size: 13px;
+      }
+
+      .card-placeholder {
+        font-size: 36px;
+      }
+    }
+
+    /* 479px以下: 1列 */
+    @media (max-width: 479px) {
+      .cards-area {
+        grid-template-columns: 1fr;
+      }
+
+      .card-placeholder {
+        font-size: 48px;
       }
     }
   </style>
