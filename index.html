@@ -234,12 +234,17 @@
       border-radius: var(--radius-card);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
       overflow: hidden;
-      transition: box-shadow 0.2s ease, transform 0.2s ease;
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+      cursor: pointer;
     }
 
     .package-card:hover {
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+      transform: translateY(-8px) scale(1.02);
+    }
+
+    [data-theme="dark"] .package-card:hover {
+      box-shadow: 0 12px 32px rgba(123, 140, 222, 0.25);
     }
 
     /* サムネイルエリア */
