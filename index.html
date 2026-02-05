@@ -789,6 +789,176 @@
         font-size: 48px;
       }
     }
+
+    /* ======================================================
+       モーダル（詳細表示）
+       ====================================================== */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background: var(--bg-card);
+      border-radius: var(--radius-card);
+      max-width: 900px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+
+    .modal-overlay.active .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 40px;
+      height: 40px;
+      background: rgba(0, 0, 0, 0.6);
+      border: none;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease;
+    }
+
+    .modal-close:hover {
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-video {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+      background: #000;
+      border-radius: var(--radius-card) var(--radius-card) 0 0;
+      overflow: hidden;
+    }
+
+    .modal-video iframe,
+    .modal-video video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .modal-video .modal-placeholder {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 80px;
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .modal-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+
+    .modal-info {
+      font-size: 15px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+
+    .modal-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .modal-tag {
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: var(--radius-tag);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .modal-download-btn {
+      width: 100%;
+      padding: 16px 24px;
+      background-color: var(--accent-blue);
+      border: none;
+      border-radius: var(--radius-button);
+      font-size: 16px;
+      font-weight: 600;
+      font-family: var(--font-family);
+      color: #FFFFFF;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .modal-download-btn:hover {
+      background-color: var(--accent-blue-hover);
+    }
+
+    /* モーダル レスポンシブ */
+    @media (max-width: 600px) {
+      .modal-content {
+        max-height: 95vh;
+      }
+
+      .modal-body {
+        padding: 16px;
+      }
+
+      .modal-title {
+        font-size: 18px;
+      }
+
+      .modal-info {
+        font-size: 14px;
+      }
+
+      .modal-download-btn {
+        padding: 14px 20px;
+        font-size: 15px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -868,6 +1038,24 @@
         <!-- JavaScriptで動的に描画 -->
       </section>
     </main>
+  </div>
+
+  <!-- モーダル（詳細表示） -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal-content">
+      <button type="button" class="modal-close" id="modal-close">&times;</button>
+      <div class="modal-video" id="modal-video">
+        <!-- 動画/YouTube/プレースホルダーがここに入る -->
+      </div>
+      <div class="modal-body">
+        <h2 class="modal-title" id="modal-title"></h2>
+        <div class="modal-info" id="modal-info"></div>
+        <div class="modal-tags" id="modal-tags"></div>
+        <button type="button" class="modal-download-btn" id="modal-download-btn">
+          ダウンロード
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- JavaScript -->
@@ -1213,6 +1401,15 @@
     const langButtons = document.querySelectorAll('.lang-btn');
     const themeToggle = document.getElementById('theme-toggle');
 
+    // モーダル要素
+    const modalOverlay = document.getElementById('modal-overlay');
+    const modalClose = document.getElementById('modal-close');
+    const modalVideo = document.getElementById('modal-video');
+    const modalTitle = document.getElementById('modal-title');
+    const modalInfo = document.getElementById('modal-info');
+    const modalTags = document.getElementById('modal-tags');
+    const modalDownloadBtn = document.getElementById('modal-download-btn');
+
     // ======================================================
     // i18n テキスト取得ヘルパー
     // ======================================================
@@ -1284,6 +1481,74 @@
       }
       // 3. デフォルトはライトモード
       setTheme('light');
+    }
+
+    // ======================================================
+    // モーダル（詳細表示）
+    // ======================================================
+    let currentModalPkgId = null;
+
+    function openModal(pkgId) {
+      const pkg = state.packages.find(p => p.id === pkgId);
+      if (!pkg) return;
+
+      currentModalPkgId = pkgId;
+
+      // タイトル
+      const title = state.currentLang === 'ja' ? pkg.title_ja : pkg.title_en;
+      modalTitle.textContent = title;
+
+      // 情報
+      const duration = pkg.durationMinutes || 60;
+      const fileSize = pkg.size || '1.0GB';
+      modalInfo.textContent = `⏱ ${duration}${t('duration')} 💾 ${fileSize}`;
+
+      // ジャンルタグ
+      modalTags.innerHTML = pkg.genres.map(genre => {
+        const genreLabel = t(`genres.${genre}`);
+        return `<span class="modal-tag card-tag" data-genre="${genre}">${genreLabel}</span>`;
+      }).join('');
+
+      // ダウンロードボタン
+      modalDownloadBtn.textContent = t('downloadBtn');
+
+      // 動画/YouTube/プレースホルダー
+      const primaryGenre = pkg.genres[0] || 'chill';
+      const emoji = GENRE_EMOJI[primaryGenre] || '🎵';
+
+      if (pkg.youtubeId) {
+        modalVideo.innerHTML = `
+          <iframe
+            src="https://www.youtube.com/embed/${pkg.youtubeId}?rel=0&modestbranding=1&autoplay=1"
+            title="${title}"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+          </iframe>
+        `;
+      } else if (pkg.resolvedPreviewUrl) {
+        modalVideo.innerHTML = `
+          <video controls autoplay loop>
+            <source src="${pkg.resolvedPreviewUrl}" type="video/mp4">
+          </video>
+        `;
+      } else {
+        modalVideo.innerHTML = `
+          <div class="modal-placeholder card-placeholder" data-genre="${primaryGenre}">${emoji}</div>
+        `;
+      }
+
+      // モーダルを表示
+      modalOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      modalOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+      currentModalPkgId = null;
+
+      // 動画を停止（YouTube iframeをクリア）
+      modalVideo.innerHTML = '';
     }
 
     // ======================================================
@@ -1421,6 +1686,30 @@
 
       // テーマ切替ボタン
       themeToggle.addEventListener('click', toggleTheme);
+
+      // モーダル閉じるボタン
+      modalClose.addEventListener('click', closeModal);
+
+      // モーダル背景クリックで閉じる
+      modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) {
+          closeModal();
+        }
+      });
+
+      // ESCキーでモーダルを閉じる
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+          closeModal();
+        }
+      });
+
+      // モーダル内のダウンロードボタン
+      modalDownloadBtn.addEventListener('click', () => {
+        if (currentModalPkgId) {
+          handleDownload(currentModalPkgId);
+        }
+      });
     }
 
     // ======================================================
@@ -1559,6 +1848,15 @@
           video.currentTime = 0;
         });
       }
+
+      // カードクリックでモーダルを開く（YouTube以外の部分）
+      card.addEventListener('click', (e) => {
+        // YouTube iframe内のクリックは無視（iframeは独自に処理される）
+        if (e.target.closest('iframe')) return;
+        // ダウンロードボタンのクリックは無視（別途処理）
+        if (e.target.closest('.card-download-btn')) return;
+        openModal(pkg.id);
+      });
 
       return card;
     }
