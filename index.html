@@ -964,11 +964,15 @@
         title_en: 'Bonfire × Lo-Fi Healing',
         genres: ['fire', 'chill'],
         durationMinutes: 60,
-        size: '900MB',
+        size: '1.27GB',
         badge: 'new',
         thumbnailPath: '',
         previewPath: '',  // previews/fire-lofi-healing.mp4
+        // Google Drive直接リンク（プレビュー用）
+        previewUrl: 'https://drive.google.com/uc?export=download&id=1LzwTRdGI7e49d8NMcjSAI_yGBkWE281V',
         downloadPath: '',
+        // Google Drive直接リンク（ダウンロード用）- フル動画のリンクをここに設定
+        downloadUrl: '',
         order: 2
       },
       {
@@ -1127,9 +1131,14 @@
     }
 
     // ======================================================
-    // プレビュー動画URL解決（Storage優先 → null）
+    // プレビュー動画URL解決（直接URL優先 → Storage → null）
     // ======================================================
     async function resolvePreview(pkg) {
+      // 1. Google Drive等の直接URLがあればそれを使用
+      if (pkg.previewUrl) {
+        return pkg.previewUrl;
+      }
+      // 2. Firebase Storage パスがあれば解決
       if (pkg.previewPath && isFirebaseConfigured() && storage) {
         try {
           return await getDownloadURL(ref(storage, pkg.previewPath));
@@ -1147,6 +1156,17 @@
       const pkg = state.packages.find(p => p.id === pkgId);
       if (!pkg) return;
 
+      // 1. Google Drive等の直接URLがあればそれを使用
+      if (pkg.downloadUrl) {
+        const a = document.createElement('a');
+        a.href = pkg.downloadUrl;
+        a.download = '';
+        a.target = '_blank'; // Google Driveは新規タブで開く
+        a.click();
+        return;
+      }
+
+      // 2. Firebase Storage パスがあれば解決
       if (pkg.downloadPath && isFirebaseConfigured() && storage) {
         try {
           const url = await getDownloadURL(ref(storage, pkg.downloadPath));
