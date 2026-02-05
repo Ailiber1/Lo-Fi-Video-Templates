@@ -967,9 +967,9 @@
         size: '1.27GB',
         badge: 'new',
         thumbnailPath: '',
-        previewPath: '',  // previews/fire-lofi-healing.mp4
-        // Google Drive直接リンク（プレビュー用）
-        previewUrl: 'https://drive.google.com/uc?export=download&id=1LzwTRdGI7e49d8NMcjSAI_yGBkWE281V',
+        previewPath: '',
+        // Streamable直接リンク（プレビュー用）
+        previewUrl: 'https://cdn.streamable.com/video/mp4/zjycva.mp4',
         downloadPath: '',
         // Google Drive直接リンク（ダウンロード用）- フル動画のリンクをここに設定
         downloadUrl: '',
@@ -1506,9 +1506,20 @@
         handleDownload(pkg.id);
       });
 
-      // 動画プレビューのホバー再生
+      // 動画プレビューのホバー再生 + エラーハンドリング
       if (hasVideo) {
         const video = card.querySelector('video');
+        const thumbnail = card.querySelector('.card-thumbnail');
+
+        // 動画読み込みエラー時はプレースホルダーに切り替え
+        video.addEventListener('error', () => {
+          const emoji = GENRE_EMOJI[primaryGenre] || '🎵';
+          thumbnail.innerHTML = `
+            ${badgeHtml}
+            <div class="card-placeholder" data-genre="${primaryGenre}">${emoji}</div>
+          `;
+        });
+
         card.addEventListener('mouseenter', () => {
           video.play().catch(() => {});
         });
