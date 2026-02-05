@@ -64,6 +64,48 @@
     }
 
     /* ======================================================
+       ダークモード（ダークブルー/パープル系）
+       ====================================================== */
+    [data-theme="dark"] {
+      /* 背景色 */
+      --bg-main: #1a1a2e;
+      --bg-card: #25253d;
+      --bg-header: #1a1a2e;
+
+      /* テキスト色 */
+      --text-primary: #e8e8f0;
+      --text-secondary: #9999b8;
+
+      /* アクセント色 */
+      --accent-blue: #7b8cde;
+      --accent-blue-hover: #9aa8ed;
+
+      /* 検索バー */
+      --search-bg: #25253d;
+      --search-border: #3d3d5c;
+      --search-border-focus: #7b8cde;
+
+      /* ジャンルボタン */
+      --genre-btn-bg: #25253d;
+      --genre-btn-border: #3d3d5c;
+      --genre-btn-text: #b8b8d0;
+      --genre-btn-active-bg: #7b8cde;
+      --genre-btn-active-text: #1a1a2e;
+
+      /* バッジ色 */
+      --badge-popular-bg: #e06b6b;
+      --badge-new-bg: #6bbd6b;
+
+      /* ジャンル配色（ダークモード用に明るく調整） */
+      --genre-rain: #8aadd0;
+      --genre-fire: #d89060;
+      --genre-anime: #a88bd0;
+      --genre-study: #8ec080;
+      --genre-night: #7080b0;
+      --genre-chill: #d0a880;
+    }
+
+    /* ======================================================
        リセット・ベーススタイル
        ====================================================== */
     *, *::before, *::after {
@@ -397,6 +439,49 @@
       color: var(--bg-card);
     }
 
+    /* テーマトグルボタン */
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background-color: var(--bg-card);
+      border: 1px solid var(--search-border);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 18px;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--accent-blue);
+      transform: scale(1.05);
+    }
+
+    .theme-toggle .icon-light,
+    .theme-toggle .icon-dark {
+      transition: opacity 0.2s ease;
+    }
+
+    .theme-toggle .icon-dark {
+      display: none;
+    }
+
+    [data-theme="dark"] .theme-toggle .icon-light {
+      display: none;
+    }
+
+    [data-theme="dark"] .theme-toggle .icon-dark {
+      display: inline;
+    }
+
     /* ======================================================
        検索バースタイル
        ====================================================== */
@@ -628,10 +713,19 @@
         <!-- ロゴ -->
         <a href="#" class="logo">Lo-Fi Gallery</a>
 
-        <!-- 言語トグル -->
-        <div class="lang-toggle">
-          <button type="button" class="lang-btn active" data-lang="ja">JA</button>
-          <button type="button" class="lang-btn" data-lang="en">EN</button>
+        <!-- コントロールエリア -->
+        <div class="header-controls">
+          <!-- テーマトグル -->
+          <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+            <span class="icon-light">☀️</span>
+            <span class="icon-dark">🌙</span>
+          </button>
+
+          <!-- 言語トグル -->
+          <div class="lang-toggle">
+            <button type="button" class="lang-btn active" data-lang="ja">JA</button>
+            <button type="button" class="lang-btn" data-lang="en">EN</button>
+          </div>
         </div>
       </div>
     </header>
@@ -887,6 +981,7 @@
       selectedGenres: [],
       searchQuery: '',
       currentLang: 'ja',
+      currentTheme: 'light',
       isLoading: false
     };
 
@@ -984,6 +1079,7 @@
     const genreFilter = document.getElementById('genre-filter');
     const genreButtons = genreFilter.querySelectorAll('.genre-btn');
     const langButtons = document.querySelectorAll('.lang-btn');
+    const themeToggle = document.getElementById('theme-toggle');
 
     // ======================================================
     // i18n テキスト取得ヘルパー
@@ -1021,6 +1117,41 @@
 
       // カードを再描画（タイトル等が言語に応じて変わる）
       renderCards(state.filteredPackages);
+    }
+
+    // ======================================================
+    // テーマ切替
+    // ======================================================
+    function setTheme(theme) {
+      if (theme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+      }
+      // localStorageに保存
+      localStorage.setItem('theme', theme);
+      state.currentTheme = theme;
+    }
+
+    function toggleTheme() {
+      const newTheme = state.currentTheme === 'dark' ? 'light' : 'dark';
+      setTheme(newTheme);
+    }
+
+    function loadSavedTheme() {
+      // 1. localStorageから取得
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        setTheme(savedTheme);
+        return;
+      }
+      // 2. システム設定を確認
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        setTheme('dark');
+        return;
+      }
+      // 3. デフォルトはライトモード
+      setTheme('light');
     }
 
     // ======================================================
@@ -1155,6 +1286,9 @@
           setLanguage(lang);
         });
       });
+
+      // テーマ切替ボタン
+      themeToggle.addEventListener('click', toggleTheme);
     }
 
     // ======================================================
@@ -1261,6 +1395,9 @@
     // 初期化
     // ======================================================
     async function init() {
+      // 保存されたテーマを読み込み
+      loadSavedTheme();
+
       // イベントリスナー設定
       setupEventListeners();
 
