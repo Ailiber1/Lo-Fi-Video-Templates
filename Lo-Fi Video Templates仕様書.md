@@ -1,4 +1,4 @@
-# Lo-Fi ギャラリー LP 実装仕様書 v2
+# Lo-Fi Video Templates LP 実装仕様書 v2
 **対象: Claude Code（Firebase統合・拡張可能構成）**
 
 ---
