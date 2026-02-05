@@ -948,19 +948,23 @@
       from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
     import { getStorage, ref, getDownloadURL }
       from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
+    import { getAnalytics, logEvent }
+      from "https://www.gstatic.com/firebasejs/10.14.1/firebase-analytics.js";
 
     // Firebase設定
     const FIREBASE_CONFIG = {
-      apiKey: "",
-      authDomain: "",
-      projectId: "",
-      storageBucket: "",
-      messagingSenderId: "",
-      appId: ""
+      apiKey: "AIzaSyDODb4VhipgcwVJeP2tG6MGsJNragThfEo",
+      authDomain: "lofi-video-templates.firebaseapp.com",
+      projectId: "lofi-video-templates",
+      storageBucket: "lofi-video-templates.firebasestorage.app",
+      messagingSenderId: "224238399039",
+      appId: "1:224238399039:web:321f1e4a2fea493840128a",
+      measurementId: "G-8BPBNLDF2G"
     };
 
     let db = null;
     let storage = null;
+    let analytics = null;
 
     // ジャンル絵文字
     const GENRE_EMOJI = {
@@ -1108,9 +1112,27 @@
         const app = initializeApp(FIREBASE_CONFIG);
         db = getFirestore(app);
         storage = getStorage(app);
+        // Analytics初期化
+        if (FIREBASE_CONFIG.measurementId) {
+          analytics = getAnalytics(app);
+          // ページビューを記録
+          trackEvent('page_view', { page_title: document.title });
+        }
         return true;
       } catch (e) {
+        console.warn('Firebase初期化エラー:', e);
         return false;
+      }
+    }
+
+    // アナリティクス イベントトラッキング
+    function trackEvent(eventName, params = {}) {
+      if (analytics) {
+        try {
+          logEvent(analytics, eventName, params);
+        } catch (e) {
+          // エラーは無視（トラッキングの失敗でアプリを止めない）
+        }
       }
     }
 
@@ -1149,7 +1171,15 @@
       const pkg = state.packages.find(p => p.id === pkgId);
       if (!pkg) return;
 
+      const title = state.currentLang === 'ja' ? pkg.title_ja : pkg.title_en;
+
       if (pkg.downloadUrl) {
+        // ダウンロードイベントを記録
+        trackEvent('download_click', {
+          package_id: pkgId,
+          package_title: title,
+          file_size: pkg.size || 'unknown'
+        });
         const a = document.createElement('a');
         a.href = pkg.downloadUrl;
         a.target = '_blank';
@@ -1160,6 +1190,12 @@
       if (pkg.downloadPath && isFirebaseConfigured() && storage) {
         try {
           const url = await getDownloadURL(ref(storage, pkg.downloadPath));
+          // ダウンロードイベントを記録
+          trackEvent('download_click', {
+            package_id: pkgId,
+            package_title: title,
+            file_size: pkg.size || 'unknown'
+          });
           const a = document.createElement('a');
           a.href = url;
           a.click();
@@ -1247,6 +1283,13 @@
       currentModalPkgId = pkgId;
 
       const title = state.currentLang === 'ja' ? pkg.title_ja : pkg.title_en;
+
+      // モーダル表示イベントを記録
+      trackEvent('modal_open', {
+        package_id: pkgId,
+        package_title: title,
+        genres: pkg.genres.join(',')
+      });
       modalTitle.textContent = title;
       modalInfo.textContent = `⏱ ${pkg.durationMinutes || 60}${t('duration')} 💾 ${pkg.size || '1.0GB'}`;
       modalTags.innerHTML = pkg.genres.map(g => `<span class="modal-tag card-tag" data-genre="${g}">${t(`genres.${g}`)}</span>`).join('');
@@ -1294,6 +1337,12 @@
       else state.selectedGenres.splice(idx, 1);
       updateGenreButtonStates();
       applyFilters();
+      // ジャンルフィルターイベントを記録
+      trackEvent('filter_genre', {
+        genre: genre,
+        selected_genres: state.selectedGenres.join(','),
+        action: idx === -1 ? 'add' : 'remove'
+      });
     }
 
     function updateGenreButtonStates() {
@@ -1301,8 +1350,24 @@
     }
 
     // イベント
+    // 検索イベントのデバウンス用
+    let searchDebounceTimer = null;
+
     function setupEventListeners() {
-      searchInput.addEventListener('input', e => { state.searchQuery = e.target.value; applyFilters(); });
+      searchInput.addEventListener('input', e => {
+        state.searchQuery = e.target.value;
+        applyFilters();
+        // 検索イベントをデバウンス（500ms後に記録）
+        clearTimeout(searchDebounceTimer);
+        if (e.target.value.trim()) {
+          searchDebounceTimer = setTimeout(() => {
+            trackEvent('search', {
+              search_term: e.target.value.trim(),
+              results_count: state.filteredPackages.length
+            });
+          }, 500);
+        }
+      });
       genreButtons.forEach(btn => btn.addEventListener('click', () => toggleGenre(btn.dataset.genre)));
       langButtons.forEach(btn => btn.addEventListener('click', () => setLanguage(btn.dataset.lang)));
       themeToggle.addEventListener('click', toggleTheme);
