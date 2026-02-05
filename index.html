@@ -264,6 +264,49 @@
       object-fit: cover;
     }
 
+    /* 動画プレビュー */
+    .card-thumbnail video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* 再生ボタンオーバーレイ */
+    .play-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.3);
+      opacity: 1;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .play-icon {
+      width: 60px;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: var(--text-primary);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .package-card:hover .play-overlay {
+      opacity: 0;
+    }
+
     /* プレースホルダーサムネイル */
     .card-placeholder {
       position: absolute;
@@ -911,6 +954,7 @@
         size: '1.2GB',
         badge: 'popular',
         thumbnailPath: '',
+        previewPath: '',  // previews/rain-lofi-work.mp4
         downloadPath: '',
         order: 1
       },
@@ -923,6 +967,7 @@
         size: '900MB',
         badge: 'new',
         thumbnailPath: '',
+        previewPath: '',  // previews/fire-lofi-healing.mp4
         downloadPath: '',
         order: 2
       },
@@ -935,6 +980,7 @@
         size: '1.5GB',
         badge: 'popular',
         thumbnailPath: '',
+        previewPath: '',  // previews/night-city-lofi.mp4
         downloadPath: '',
         order: 3
       },
@@ -947,6 +993,7 @@
         size: '1.1GB',
         badge: 'new',
         thumbnailPath: '',
+        previewPath: '',  // previews/cafe-lofi-reading.mp4
         downloadPath: '',
         order: 4
       },
@@ -959,6 +1006,7 @@
         size: '1.3GB',
         badge: 'popular',
         thumbnailPath: '',
+        previewPath: '',  // previews/sakura-lofi-spring.mp4
         downloadPath: '',
         order: 5
       },
@@ -971,6 +1019,7 @@
         size: '1.0GB',
         badge: 'new',
         thumbnailPath: '',
+        previewPath: '',  // previews/forest-lofi-nature.mp4
         downloadPath: '',
         order: 6
       },
@@ -983,6 +1032,7 @@
         size: '1.4GB',
         badge: 'popular',
         thumbnailPath: '',
+        previewPath: '',  // previews/ocean-lofi-waves.mp4
         downloadPath: '',
         order: 7
       },
@@ -995,6 +1045,7 @@
         size: '1.1GB',
         badge: 'new',
         thumbnailPath: '',
+        previewPath: '',  // previews/bedroom-lofi-sleep.mp4
         downloadPath: '',
         order: 8
       }
@@ -1073,6 +1124,20 @@
         }
       }
       return null; // → CSSプレースホルダー表示
+    }
+
+    // ======================================================
+    // プレビュー動画URL解決（Storage優先 → null）
+    // ======================================================
+    async function resolvePreview(pkg) {
+      if (pkg.previewPath && isFirebaseConfigured() && storage) {
+        try {
+          return await getDownloadURL(ref(storage, pkg.previewPath));
+        } catch (e) {
+          // ファイル未アップロード → nullに落ちる
+        }
+      }
+      return null;
     }
 
     // ======================================================
@@ -1364,11 +1429,26 @@
         badgeHtml = `<span class="card-badge new">${t('badge.new')}</span>`;
       }
 
-      // サムネイルHTML（resolvedThumbnailUrlがあれば画像、なければプレースホルダー）
+      // サムネイル/動画HTML（優先順位: 動画 > 画像 > プレースホルダー）
       let thumbnailHtml;
-      if (pkg.resolvedThumbnailUrl) {
+      let hasVideo = false;
+
+      if (pkg.resolvedPreviewUrl) {
+        // 動画プレビューがある場合
+        hasVideo = true;
+        thumbnailHtml = `
+          <video muted loop playsinline preload="metadata">
+            <source src="${pkg.resolvedPreviewUrl}" type="video/mp4">
+          </video>
+          <div class="play-overlay">
+            <div class="play-icon">▶</div>
+          </div>
+        `;
+      } else if (pkg.resolvedThumbnailUrl) {
+        // 静止画サムネイルがある場合
         thumbnailHtml = `<img src="${pkg.resolvedThumbnailUrl}" alt="${title}" loading="lazy">`;
       } else {
+        // プレースホルダー
         const emoji = GENRE_EMOJI[primaryGenre] || '🎵';
         thumbnailHtml = `<div class="card-placeholder" data-genre="${primaryGenre}">${emoji}</div>`;
       }
@@ -1401,19 +1481,41 @@
 
       // ダウンロードボタンにイベントリスナーを追加
       const downloadBtn = card.querySelector('.card-download-btn');
-      downloadBtn.addEventListener('click', () => handleDownload(pkg.id));
+      downloadBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        handleDownload(pkg.id);
+      });
+
+      // 動画プレビューのホバー再生
+      if (hasVideo) {
+        const video = card.querySelector('video');
+        card.addEventListener('mouseenter', () => {
+          video.play().catch(() => {});
+        });
+        card.addEventListener('mouseleave', () => {
+          video.pause();
+          video.currentTime = 0;
+        });
+      }
 
       return card;
     }
 
     // ======================================================
-    // サムネイルURL一括解決
+    // サムネイル・プレビューURL一括解決
     // ======================================================
     async function resolveAllThumbnails(packages) {
       const resolved = await Promise.all(
         packages.map(async (pkg) => {
-          const url = await resolveThumbnail(pkg);
-          return { ...pkg, resolvedThumbnailUrl: url };
+          const [thumbnailUrl, previewUrl] = await Promise.all([
+            resolveThumbnail(pkg),
+            resolvePreview(pkg)
+          ]);
+          return {
+            ...pkg,
+            resolvedThumbnailUrl: thumbnailUrl,
+            resolvedPreviewUrl: previewUrl
+          };
         })
       );
       return resolved;
