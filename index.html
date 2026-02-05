@@ -762,6 +762,90 @@
     // DOM要素
     // ======================================================
     const cardsContainer = document.getElementById('cards-container');
+    const searchInput = document.getElementById('search-input');
+    const genreFilter = document.getElementById('genre-filter');
+    const genreButtons = genreFilter.querySelectorAll('.genre-btn');
+
+    // ======================================================
+    // フィルタ・検索ロジック
+    // ======================================================
+    function applyFilters() {
+      let filtered = [...state.packages];
+
+      // ジャンルフィルター（AND検索: 選択中のジャンルすべてを含む）
+      if (state.selectedGenres.length > 0) {
+        filtered = filtered.filter(pkg =>
+          state.selectedGenres.every(genre => pkg.genres.includes(genre))
+        );
+      }
+
+      // キーワード検索（タイトルJA/ENを対象、大文字小文字区別なし）
+      if (state.searchQuery.trim() !== '') {
+        const query = state.searchQuery.toLowerCase().trim();
+        filtered = filtered.filter(pkg => {
+          const titleJa = pkg.title_ja.toLowerCase();
+          const titleEn = pkg.title_en.toLowerCase();
+          return titleJa.includes(query) || titleEn.includes(query);
+        });
+      }
+
+      state.filteredPackages = filtered;
+      renderCards(state.filteredPackages);
+    }
+
+    // ======================================================
+    // ジャンルボタン切替
+    // ======================================================
+    function toggleGenre(genre) {
+      const index = state.selectedGenres.indexOf(genre);
+      if (index === -1) {
+        // 未選択 → 選択に追加
+        state.selectedGenres.push(genre);
+      } else {
+        // 選択済み → 選択解除
+        state.selectedGenres.splice(index, 1);
+      }
+      updateGenreButtonStates();
+      applyFilters();
+    }
+
+    // ======================================================
+    // ジャンルボタン状態更新
+    // ======================================================
+    function updateGenreButtonStates() {
+      genreButtons.forEach(btn => {
+        const genre = btn.dataset.genre;
+        if (state.selectedGenres.includes(genre)) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+    }
+
+    // ======================================================
+    // 検索入力ハンドラ（リアルタイム）
+    // ======================================================
+    function handleSearchInput(e) {
+      state.searchQuery = e.target.value;
+      applyFilters();
+    }
+
+    // ======================================================
+    // イベントリスナー設定
+    // ======================================================
+    function setupEventListeners() {
+      // 検索入力（リアルタイム）
+      searchInput.addEventListener('input', handleSearchInput);
+
+      // ジャンルボタン
+      genreButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const genre = btn.dataset.genre;
+          toggleGenre(genre);
+        });
+      });
+    }
 
     // ======================================================
     // カード描画関数
@@ -884,6 +968,9 @@
     // 初期化
     // ======================================================
     function init() {
+      // イベントリスナー設定
+      setupEventListeners();
+
       // ローカルデータで初期表示
       state.packages = LOCAL_PACKAGES;
       state.filteredPackages = [...state.packages];
