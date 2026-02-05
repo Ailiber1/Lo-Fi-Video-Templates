@@ -126,9 +126,347 @@
       margin-bottom: var(--grid-gap);
     }
 
-    /* カードグリッドエリア */
+    /* ======================================================
+       カードグリッドエリア
+       ====================================================== */
     .cards-area {
-      /* グリッドレイアウトはステップ4で実装 */
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--grid-gap);
+    }
+
+    /* 空状態メッセージ */
+    .empty-message {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-secondary);
+      font-size: 15px;
+    }
+
+    /* ローディング状態 */
+    .loading-state {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      gap: 16px;
+    }
+
+    .loading-spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--search-border);
+      border-top-color: var(--accent-blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loading-text {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    /* エラー状態 */
+    .error-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--badge-popular-bg);
+      font-size: 15px;
+    }
+
+    /* ======================================================
+       パッケージカードスタイル
+       ====================================================== */
+    .package-card {
+      background-color: var(--bg-card);
+      border-radius: var(--radius-card);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    .package-card:hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      transform: translateY(-2px);
+    }
+
+    /* サムネイルエリア */
+    .card-thumbnail {
+      position: relative;
+      width: 100%;
+      padding-top: 100%; /* 1:1 アスペクト比 */
+      overflow: hidden;
+    }
+
+    .card-thumbnail img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* プレースホルダーサムネイル */
+    .card-placeholder {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+    }
+
+    /* ジャンル別プレースホルダー配色 */
+    .card-placeholder[data-genre="rain"] {
+      background: linear-gradient(135deg, #6B8FAD 0%, #8BAFC8 100%);
+    }
+    .card-placeholder[data-genre="fire"] {
+      background: linear-gradient(135deg, #C07040 0%, #D49060 100%);
+    }
+    .card-placeholder[data-genre="anime"] {
+      background: linear-gradient(135deg, #8B6BAD 0%, #A88BC8 100%);
+    }
+    .card-placeholder[data-genre="study"] {
+      background: linear-gradient(135deg, #7AAD6B 0%, #98C88B 100%);
+    }
+    .card-placeholder[data-genre="night"] {
+      background: linear-gradient(135deg, #4A5580 0%, #6A75A0 100%);
+    }
+    .card-placeholder[data-genre="chill"] {
+      background: linear-gradient(135deg, #AD8B6B 0%, #C8A88B 100%);
+    }
+
+    /* バッジ */
+    .card-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 2px 10px;
+      border-radius: var(--radius-badge);
+      font-size: 12px;
+      font-weight: 600;
+      color: #FFFFFF;
+      z-index: 1;
+    }
+
+    .card-badge.popular {
+      background-color: var(--badge-popular-bg);
+    }
+
+    .card-badge.new {
+      background-color: var(--badge-new-bg);
+    }
+
+    /* カード本文エリア */
+    .card-body {
+      padding: 14px;
+    }
+
+    /* タイトル */
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* 情報行 */
+    .card-info {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+
+    /* ジャンルタグコンテナ */
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    /* ジャンルタグ */
+    .card-tag {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: var(--radius-tag);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    /* ジャンル別タグ配色 */
+    .card-tag[data-genre="rain"] {
+      background-color: rgba(107, 143, 173, 0.15);
+      color: var(--genre-rain);
+    }
+    .card-tag[data-genre="fire"] {
+      background-color: rgba(192, 112, 64, 0.15);
+      color: var(--genre-fire);
+    }
+    .card-tag[data-genre="anime"] {
+      background-color: rgba(139, 107, 173, 0.15);
+      color: var(--genre-anime);
+    }
+    .card-tag[data-genre="study"] {
+      background-color: rgba(122, 173, 107, 0.15);
+      color: var(--genre-study);
+    }
+    .card-tag[data-genre="night"] {
+      background-color: rgba(74, 85, 128, 0.15);
+      color: var(--genre-night);
+    }
+    .card-tag[data-genre="chill"] {
+      background-color: rgba(173, 139, 107, 0.15);
+      color: var(--genre-chill);
+    }
+
+    /* ダウンロードボタン */
+    .card-download-btn {
+      width: 100%;
+      padding: 10px 16px;
+      background-color: var(--accent-blue);
+      border: none;
+      border-radius: var(--radius-button);
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font-family);
+      color: #FFFFFF;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .card-download-btn:hover {
+      background-color: var(--accent-blue-hover);
+    }
+
+    /* ======================================================
+       ヘッダースタイル
+       ====================================================== */
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+
+    .lang-toggle {
+      display: flex;
+      gap: 4px;
+      background-color: var(--bg-card);
+      border-radius: var(--radius-button);
+      padding: 4px;
+      border: 1px solid var(--search-border);
+    }
+
+    .lang-btn {
+      padding: 6px 12px;
+      border: none;
+      background: transparent;
+      border-radius: 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .lang-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .lang-btn.active {
+      background-color: var(--text-primary);
+      color: var(--bg-card);
+    }
+
+    /* ======================================================
+       検索バースタイル
+       ====================================================== */
+    .search-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .search-input {
+      width: 100%;
+      max-width: 600px;
+      padding: 14px 24px;
+      font-size: 15px;
+      font-family: var(--font-family);
+      background-color: var(--search-bg);
+      border: 1px solid var(--search-border);
+      border-radius: var(--radius-search);
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .search-input::placeholder {
+      color: var(--text-secondary);
+    }
+
+    .search-input:focus {
+      border-color: var(--search-border-focus);
+      box-shadow: 0 0 0 3px rgba(91, 155, 213, 0.15);
+    }
+
+    /* ======================================================
+       ジャンルフィルタースタイル
+       ====================================================== */
+    .genre-filter {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .genre-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: var(--font-family);
+      background-color: var(--genre-btn-bg);
+      border: 1px solid var(--genre-btn-border);
+      border-radius: var(--radius-button);
+      color: var(--genre-btn-text);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .genre-btn:hover {
+      border-color: var(--text-secondary);
+    }
+
+    .genre-btn.active {
+      background-color: var(--genre-btn-active-bg);
+      border-color: var(--genre-btn-active-bg);
+      color: var(--genre-btn-active-text);
+    }
+
+    .genre-btn .emoji {
+      font-size: 16px;
     }
 
     /* ======================================================
@@ -153,6 +491,133 @@
         --grid-gap: 12px;
       }
     }
+
+    /* ======================================================
+       レスポンシブ - 検索・フィルター
+       ====================================================== */
+    @media (max-width: 767px) {
+      .logo {
+        font-size: 18px;
+      }
+
+      .lang-btn {
+        padding: 5px 10px;
+        font-size: 12px;
+      }
+
+      .search-input {
+        padding: 12px 20px;
+        font-size: 14px;
+      }
+
+      .genre-filter {
+        gap: 8px;
+      }
+
+      .genre-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+      }
+
+      .genre-btn .emoji {
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 479px) {
+      .header {
+        padding: 12px var(--section-padding);
+      }
+
+      .logo {
+        font-size: 16px;
+      }
+
+      .search-container {
+        margin-bottom: 16px;
+      }
+
+      .search-input {
+        padding: 10px 16px;
+        font-size: 14px;
+        border-radius: 20px;
+      }
+
+      .genre-filter {
+        gap: 6px;
+      }
+
+      .genre-btn {
+        padding: 6px 10px;
+        font-size: 12px;
+        border-radius: 16px;
+      }
+
+      .genre-btn .emoji {
+        font-size: 13px;
+      }
+    }
+
+    /* ======================================================
+       レスポンシブ - カードグリッド
+       ====================================================== */
+    /* 1200px以上: 4列（デフォルト） */
+
+    /* 768px〜1199px: 3列 */
+    @media (max-width: 1199px) {
+      .cards-area {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    /* 480px〜767px: 2列 */
+    @media (max-width: 767px) {
+      .cards-area {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .card-body {
+        padding: 12px;
+      }
+
+      .card-title {
+        font-size: 14px;
+      }
+
+      .card-info {
+        font-size: 12px;
+      }
+
+      .card-tags {
+        gap: 4px;
+        margin-bottom: 10px;
+      }
+
+      .card-tag {
+        font-size: 11px;
+        padding: 2px 8px;
+      }
+
+      .card-download-btn {
+        padding: 8px 12px;
+        font-size: 13px;
+      }
+
+      .card-placeholder {
+        font-size: 36px;
+      }
+    }
+
+    /* 479px以下: 1列 */
+    @media (max-width: 479px) {
+      .cards-area {
+        grid-template-columns: 1fr;
+      }
+
+      .card-placeholder {
+        font-size: 48px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -160,7 +625,14 @@
     <!-- ヘッダー -->
     <header class="header">
       <div class="header-inner">
-        <!-- ステップ2で実装: ロゴ + 言語トグル -->
+        <!-- ロゴ -->
+        <a href="#" class="logo">Lo-Fi Gallery</a>
+
+        <!-- 言語トグル -->
+        <div class="lang-toggle">
+          <button type="button" class="lang-btn active" data-lang="ja">JA</button>
+          <button type="button" class="lang-btn" data-lang="en">EN</button>
+        </div>
       </div>
     </header>
 
@@ -168,19 +640,665 @@
     <main class="main-content">
       <!-- 検索・フィルターエリア -->
       <section class="search-filter-area">
-        <!-- ステップ3で実装: 検索バー + ジャンルフィルター -->
+        <!-- 検索バー -->
+        <div class="search-container">
+          <input
+            type="text"
+            class="search-input"
+            id="search-input"
+            placeholder="キーワードで検索"
+            data-i18n-placeholder="searchPlaceholder"
+          >
+        </div>
+
+        <!-- ジャンルフィルター -->
+        <div class="genre-filter" id="genre-filter">
+          <button type="button" class="genre-btn" data-genre="rain">
+            <span class="emoji">🌧️</span>
+            <span data-i18n="genres.rain">雨</span>
+          </button>
+          <button type="button" class="genre-btn" data-genre="fire">
+            <span class="emoji">🔥</span>
+            <span data-i18n="genres.fire">火</span>
+          </button>
+          <button type="button" class="genre-btn" data-genre="anime">
+            <span class="emoji">🎬</span>
+            <span data-i18n="genres.anime">アニメ</span>
+          </button>
+          <button type="button" class="genre-btn" data-genre="study">
+            <span class="emoji">📚</span>
+            <span data-i18n="genres.study">勉強</span>
+          </button>
+          <button type="button" class="genre-btn" data-genre="night">
+            <span class="emoji">🌙</span>
+            <span data-i18n="genres.night">夜</span>
+          </button>
+          <button type="button" class="genre-btn" data-genre="chill">
+            <span class="emoji">☕</span>
+            <span data-i18n="genres.chill">チル</span>
+          </button>
+        </div>
       </section>
 
       <!-- カードグリッドエリア -->
       <section class="cards-area" id="cards-container">
-        <!-- ステップ4で実装: パッケージカード -->
+        <!-- JavaScriptで動的に描画 -->
       </section>
     </main>
   </div>
 
-  <!-- ステップ5以降で実装: JavaScript -->
+  <!-- JavaScript -->
   <script type="module">
-    // Firebase SDKとロジックはステップ8で実装
+    // ======================================================
+    // Firebase SDK インポート（CDN）
+    // ======================================================
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, orderBy }
+      from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+    import { getStorage, ref, getDownloadURL }
+      from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
+
+    // ======================================================
+    // Firebase 設定（ここを書き換えるだけで接続先変更）
+    // ======================================================
+    const FIREBASE_CONFIG = {
+      apiKey: "",            // ← 自分のキーを入力
+      authDomain: "",        // ← 自分のドメインを入力
+      projectId: "",         // ← 自分のIDを入力
+      storageBucket: "",     // ← 自分のバケットを入力
+      messagingSenderId: "", // ← 自分のIDを入力
+      appId: ""              // ← 自分のIDを入力
+    };
+    // 上記が空 or 無効 → 自動でフォールバックモードになる
+    // ======================================================
+
+    // Firebase インスタンス（設定有効時のみ初期化）
+    let db = null;
+    let storage = null;
+
+    // ======================================================
+    // ジャンル定義（絵文字マッピング）
+    // ======================================================
+    const GENRE_EMOJI = {
+      rain: '🌧️',
+      fire: '🔥',
+      anime: '🎬',
+      study: '📚',
+      night: '🌙',
+      chill: '☕'
+    };
+
+    // ======================================================
+    // i18n 辞書
+    // ======================================================
+    const I18N = {
+      ja: {
+        searchPlaceholder: 'キーワードで検索',
+        genres: {
+          rain: '雨',
+          fire: '火',
+          anime: 'アニメ',
+          study: '勉強',
+          night: '夜',
+          chill: 'チル'
+        },
+        badge: {
+          popular: '人気',
+          new: '新作'
+        },
+        downloadBtn: 'ダウンロード',
+        emptyMessage: '該当するパッケージがありません',
+        loading: '読み込み中...',
+        error: 'データの読み込みに失敗しました',
+        duration: '分',
+        comingSoon: '準備中です。もうしばらくお待ちください。'
+      },
+      en: {
+        searchPlaceholder: 'Search by keyword',
+        genres: {
+          rain: 'Rain',
+          fire: 'Fire',
+          anime: 'Anime',
+          study: 'Study',
+          night: 'Night',
+          chill: 'Chill'
+        },
+        badge: {
+          popular: 'Popular',
+          new: 'New'
+        },
+        downloadBtn: 'Download',
+        emptyMessage: 'No packages found',
+        loading: 'Loading...',
+        error: 'Failed to load data',
+        duration: 'min',
+        comingSoon: 'Coming soon. Please wait.'
+      }
+    };
+
+    // ======================================================
+    // フォールバック用ローカルデータ（Firebase接続失敗時に使用）
+    // ======================================================
+    const LOCAL_PACKAGES = [
+      {
+        id: 'rain-lofi-work',
+        title_ja: '雨音×Lo-Fi 作業用',
+        title_en: 'Rain × Lo-Fi Work',
+        genres: ['rain', 'study'],
+        durationMinutes: 60,
+        size: '1.2GB',
+        badge: 'popular',
+        thumbnailPath: '',
+        downloadPath: '',
+        order: 1
+      },
+      {
+        id: 'fire-lofi-healing',
+        title_ja: '焚き火×Lo-Fi 癒し系',
+        title_en: 'Bonfire × Lo-Fi Healing',
+        genres: ['fire', 'chill'],
+        durationMinutes: 60,
+        size: '900MB',
+        badge: 'new',
+        thumbnailPath: '',
+        downloadPath: '',
+        order: 2
+      },
+      {
+        id: 'night-city-lofi',
+        title_ja: '夜の街×Lo-Fi 散歩用',
+        title_en: 'Night City × Lo-Fi Walk',
+        genres: ['night', 'anime'],
+        durationMinutes: 60,
+        size: '1.5GB',
+        badge: 'popular',
+        thumbnailPath: '',
+        downloadPath: '',
+        order: 3
+      },
+      {
+        id: 'cafe-lofi-reading',
+        title_ja: 'カフェ×Lo-Fi 読書用',
+        title_en: 'Café × Lo-Fi Reading',
+        genres: ['rain', 'study'],
+        durationMinutes: 60,
+        size: '1.1GB',
+        badge: 'new',
+        thumbnailPath: '',
+        downloadPath: '',
+        order: 4
+      },
+      {
+        id: 'sakura-lofi-spring',
+        title_ja: '桜×Lo-Fi 春の作業用',
+        title_en: 'Sakura × Lo-Fi Spring',
+        genres: ['chill', 'study'],
+        durationMinutes: 60,
+        size: '1.3GB',
+        badge: 'popular',
+        thumbnailPath: '',
+        downloadPath: '',
+        order: 5
+      },
+      {
+        id: 'forest-lofi-nature',
+        title_ja: '森林×Lo-Fi 自然音',
+        title_en: 'Forest × Lo-Fi Nature',
+        genres: ['rain', 'chill'],
+        durationMinutes: 60,
+        size: '1.0GB',
+        badge: 'new',
+        thumbnailPath: '',
+        downloadPath: '',
+        order: 6
+      },
+      {
+        id: 'ocean-lofi-waves',
+        title_ja: '海×Lo-Fi 波の音',
+        title_en: 'Ocean × Lo-Fi Waves',
+        genres: ['chill', 'night'],
+        durationMinutes: 60,
+        size: '1.4GB',
+        badge: 'popular',
+        thumbnailPath: '',
+        downloadPath: '',
+        order: 7
+      },
+      {
+        id: 'bedroom-lofi-sleep',
+        title_ja: 'ベッドルーム×Lo-Fi 睡眠用',
+        title_en: 'Bedroom × Lo-Fi Sleep',
+        genres: ['night', 'chill'],
+        durationMinutes: 60,
+        size: '1.1GB',
+        badge: 'new',
+        thumbnailPath: '',
+        downloadPath: '',
+        order: 8
+      }
+    ];
+
+    // ======================================================
+    // アプリケーション状態
+    // ======================================================
+    const state = {
+      packages: [],
+      filteredPackages: [],
+      selectedGenres: [],
+      searchQuery: '',
+      currentLang: 'ja',
+      isLoading: false
+    };
+
+    // ======================================================
+    // Firebase 設定チェック
+    // ======================================================
+    function isFirebaseConfigured() {
+      return FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.projectId;
+    }
+
+    // ======================================================
+    // Firebase 初期化
+    // ======================================================
+    function initializeFirebase() {
+      if (!isFirebaseConfigured()) return false;
+      try {
+        const app = initializeApp(FIREBASE_CONFIG);
+        db = getFirestore(app);
+        storage = getStorage(app);
+        return true;
+      } catch (e) {
+        console.warn('Firebase初期化失敗:', e);
+        return false;
+      }
+    }
+
+    // ======================================================
+    // データ取得（Firebase優先 → フォールバック）
+    // ======================================================
+    async function loadPackages() {
+      // 1. Firebase接続を試行
+      if (isFirebaseConfigured() && db) {
+        try {
+          const snapshot = await getDocs(
+            query(collection(db, 'packages'), orderBy('order'))
+          );
+          if (!snapshot.empty) {
+            const packages = snapshot.docs
+              .map(doc => doc.data())
+              .filter(pkg => pkg.visible !== false);
+            return packages;
+          }
+        } catch (e) {
+          console.warn('Firestore取得失敗、フォールバックへ:', e);
+        }
+      }
+
+      // 2. フォールバック: ローカルデータを返す
+      return LOCAL_PACKAGES;
+    }
+
+    // ======================================================
+    // サムネイルURL解決（Storage優先 → null）
+    // ======================================================
+    async function resolveThumbnail(pkg) {
+      if (pkg.thumbnailPath && isFirebaseConfigured() && storage) {
+        try {
+          return await getDownloadURL(ref(storage, pkg.thumbnailPath));
+        } catch (e) {
+          // ファイル未アップロード → nullに落ちる
+        }
+      }
+      return null; // → CSSプレースホルダー表示
+    }
+
+    // ======================================================
+    // ダウンロード処理
+    // ======================================================
+    async function handleDownload(pkgId) {
+      const pkg = state.packages.find(p => p.id === pkgId);
+      if (!pkg) return;
+
+      if (pkg.downloadPath && isFirebaseConfigured() && storage) {
+        try {
+          const url = await getDownloadURL(ref(storage, pkg.downloadPath));
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = '';
+          a.click();
+          return;
+        } catch (e) {
+          console.warn('DLファイル未設定:', pkg.id);
+        }
+      }
+
+      // フォールバック: 準備中メッセージ
+      alert(t('comingSoon'));
+    }
+
+    // ======================================================
+    // DOM要素
+    // ======================================================
+    const cardsContainer = document.getElementById('cards-container');
+    const searchInput = document.getElementById('search-input');
+    const genreFilter = document.getElementById('genre-filter');
+    const genreButtons = genreFilter.querySelectorAll('.genre-btn');
+    const langButtons = document.querySelectorAll('.lang-btn');
+
+    // ======================================================
+    // i18n テキスト取得ヘルパー
+    // ======================================================
+    function t(key) {
+      const keys = key.split('.');
+      let value = I18N[state.currentLang];
+      for (const k of keys) {
+        value = value?.[k];
+      }
+      return value || key;
+    }
+
+    // ======================================================
+    // 言語切替
+    // ======================================================
+    function setLanguage(lang) {
+      if (lang === state.currentLang) return;
+      state.currentLang = lang;
+
+      // html lang属性を更新
+      document.documentElement.lang = lang;
+
+      // 言語ボタンの状態更新
+      langButtons.forEach(btn => {
+        if (btn.dataset.lang === lang) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      // UIテキストを更新
+      applyLanguageToUI();
+
+      // カードを再描画（タイトル等が言語に応じて変わる）
+      renderCards(state.filteredPackages);
+    }
+
+    // ======================================================
+    // ローディング表示
+    // ======================================================
+    function showLoading() {
+      cardsContainer.innerHTML = `
+        <div class="loading-state">
+          <div class="loading-spinner"></div>
+          <div class="loading-text">${t('loading')}</div>
+        </div>
+      `;
+    }
+
+    // ======================================================
+    // ローディング非表示（renderCardsで上書きされるので明示的な処理不要）
+    // ======================================================
+    function hideLoading() {
+      // renderCards() が呼ばれると自動的にクリアされる
+    }
+
+    // ======================================================
+    // エラー表示
+    // ======================================================
+    function showError() {
+      cardsContainer.innerHTML = `
+        <div class="error-state">${t('error')}</div>
+      `;
+    }
+
+    // ======================================================
+    // UIテキストに言語を適用
+    // ======================================================
+    function applyLanguageToUI() {
+      // 検索バーのplaceholder
+      searchInput.placeholder = t('searchPlaceholder');
+
+      // ジャンルボタンのラベル
+      genreButtons.forEach(btn => {
+        const genre = btn.dataset.genre;
+        const labelSpan = btn.querySelector('[data-i18n]');
+        if (labelSpan) {
+          labelSpan.textContent = t(`genres.${genre}`);
+        }
+      });
+    }
+
+    // ======================================================
+    // フィルタ・検索ロジック
+    // ======================================================
+    function applyFilters() {
+      let filtered = [...state.packages];
+
+      // ジャンルフィルター（AND検索: 選択中のジャンルすべてを含む）
+      if (state.selectedGenres.length > 0) {
+        filtered = filtered.filter(pkg =>
+          state.selectedGenres.every(genre => pkg.genres.includes(genre))
+        );
+      }
+
+      // キーワード検索（タイトルJA/ENを対象、大文字小文字区別なし）
+      if (state.searchQuery.trim() !== '') {
+        const query = state.searchQuery.toLowerCase().trim();
+        filtered = filtered.filter(pkg => {
+          const titleJa = pkg.title_ja.toLowerCase();
+          const titleEn = pkg.title_en.toLowerCase();
+          return titleJa.includes(query) || titleEn.includes(query);
+        });
+      }
+
+      state.filteredPackages = filtered;
+      renderCards(state.filteredPackages);
+    }
+
+    // ======================================================
+    // ジャンルボタン切替
+    // ======================================================
+    function toggleGenre(genre) {
+      const index = state.selectedGenres.indexOf(genre);
+      if (index === -1) {
+        // 未選択 → 選択に追加
+        state.selectedGenres.push(genre);
+      } else {
+        // 選択済み → 選択解除
+        state.selectedGenres.splice(index, 1);
+      }
+      updateGenreButtonStates();
+      applyFilters();
+    }
+
+    // ======================================================
+    // ジャンルボタン状態更新
+    // ======================================================
+    function updateGenreButtonStates() {
+      genreButtons.forEach(btn => {
+        const genre = btn.dataset.genre;
+        if (state.selectedGenres.includes(genre)) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+    }
+
+    // ======================================================
+    // 検索入力ハンドラ（リアルタイム）
+    // ======================================================
+    function handleSearchInput(e) {
+      state.searchQuery = e.target.value;
+      applyFilters();
+    }
+
+    // ======================================================
+    // イベントリスナー設定
+    // ======================================================
+    function setupEventListeners() {
+      // 検索入力（リアルタイム）
+      searchInput.addEventListener('input', handleSearchInput);
+
+      // ジャンルボタン
+      genreButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const genre = btn.dataset.genre;
+          toggleGenre(genre);
+        });
+      });
+
+      // 言語切替ボタン
+      langButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lang = btn.dataset.lang;
+          setLanguage(lang);
+        });
+      });
+    }
+
+    // ======================================================
+    // カード描画関数
+    // ======================================================
+    function renderCards(packages) {
+      // コンテナをクリア
+      cardsContainer.innerHTML = '';
+
+      // 空状態チェック
+      if (packages.length === 0) {
+        const emptyMsg = document.createElement('div');
+        emptyMsg.className = 'empty-message';
+        emptyMsg.textContent = t('emptyMessage');
+        cardsContainer.appendChild(emptyMsg);
+        return;
+      }
+
+      // 各パッケージのカードを生成
+      packages.forEach(pkg => {
+        const card = createCardElement(pkg);
+        cardsContainer.appendChild(card);
+      });
+    }
+
+    // ======================================================
+    // カード要素生成関数
+    // ======================================================
+    function createCardElement(pkg) {
+      const card = document.createElement('article');
+      card.className = 'package-card';
+      card.dataset.id = pkg.id;
+
+      // タイトル（言語に応じて切替）
+      const title = state.currentLang === 'ja' ? pkg.title_ja : pkg.title_en;
+
+      // 主要ジャンル（プレースホルダー用）
+      const primaryGenre = pkg.genres[0] || 'chill';
+
+      // バッジHTML
+      let badgeHtml = '';
+      if (pkg.badge === 'popular') {
+        badgeHtml = `<span class="card-badge popular">${t('badge.popular')}</span>`;
+      } else if (pkg.badge === 'new') {
+        badgeHtml = `<span class="card-badge new">${t('badge.new')}</span>`;
+      }
+
+      // サムネイルHTML（resolvedThumbnailUrlがあれば画像、なければプレースホルダー）
+      let thumbnailHtml;
+      if (pkg.resolvedThumbnailUrl) {
+        thumbnailHtml = `<img src="${pkg.resolvedThumbnailUrl}" alt="${title}" loading="lazy">`;
+      } else {
+        const emoji = GENRE_EMOJI[primaryGenre] || '🎵';
+        thumbnailHtml = `<div class="card-placeholder" data-genre="${primaryGenre}">${emoji}</div>`;
+      }
+
+      // ジャンルタグHTML
+      const tagsHtml = pkg.genres.map(genre => {
+        const genreLabel = t(`genres.${genre}`);
+        return `<span class="card-tag" data-genre="${genre}">${genreLabel}</span>`;
+      }).join('');
+
+      // 再生時間と容量
+      const duration = pkg.durationMinutes || 60;
+      const fileSize = pkg.size || '1.0GB';
+
+      // カードHTML組み立て
+      card.innerHTML = `
+        <div class="card-thumbnail">
+          ${badgeHtml}
+          ${thumbnailHtml}
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">${title}</h3>
+          <div class="card-info">⏱ ${duration}${t('duration')} 💾 ${fileSize}</div>
+          <div class="card-tags">${tagsHtml}</div>
+          <button type="button" class="card-download-btn" data-id="${pkg.id}">
+            ${t('downloadBtn')}
+          </button>
+        </div>
+      `;
+
+      // ダウンロードボタンにイベントリスナーを追加
+      const downloadBtn = card.querySelector('.card-download-btn');
+      downloadBtn.addEventListener('click', () => handleDownload(pkg.id));
+
+      return card;
+    }
+
+    // ======================================================
+    // サムネイルURL一括解決
+    // ======================================================
+    async function resolveAllThumbnails(packages) {
+      const resolved = await Promise.all(
+        packages.map(async (pkg) => {
+          const url = await resolveThumbnail(pkg);
+          return { ...pkg, resolvedThumbnailUrl: url };
+        })
+      );
+      return resolved;
+    }
+
+    // ======================================================
+    // 初期化
+    // ======================================================
+    async function init() {
+      // イベントリスナー設定
+      setupEventListeners();
+
+      // Firebase初期化
+      initializeFirebase();
+
+      // ローディング表示
+      state.isLoading = true;
+      showLoading();
+
+      try {
+        // データ読み込み
+        const packages = await loadPackages();
+        // サムネイルURL解決
+        state.packages = await resolveAllThumbnails(packages);
+        state.filteredPackages = [...state.packages];
+        // ローディング終了 → カード描画
+        state.isLoading = false;
+        renderCards(state.filteredPackages);
+      } catch (e) {
+        console.error('データ読み込みエラー:', e);
+        state.isLoading = false;
+
+        // フォールバックも失敗した場合はエラー表示
+        // 通常はloadPackages()がLOCAL_PACKAGESを返すので到達しない
+        if (state.packages.length === 0) {
+          // 最後の手段としてローカルデータを直接使用
+          state.packages = LOCAL_PACKAGES;
+          state.filteredPackages = [...state.packages];
+          renderCards(state.filteredPackages);
+        } else {
+          showError();
+        }
+      }
+    }
+
+    // DOM読み込み完了後に初期化
+    document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>
