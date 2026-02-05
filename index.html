@@ -662,6 +662,52 @@
     };
 
     // ======================================================
+    // i18n 辞書
+    // ======================================================
+    const I18N = {
+      ja: {
+        searchPlaceholder: 'キーワードで検索',
+        genres: {
+          rain: '雨',
+          fire: '火',
+          anime: 'アニメ',
+          study: '勉強',
+          night: '夜',
+          chill: 'チル'
+        },
+        badge: {
+          popular: '人気',
+          new: '新作'
+        },
+        downloadBtn: 'ダウンロード',
+        emptyMessage: '該当するパッケージがありません',
+        loading: '読み込み中...',
+        error: 'データの読み込みに失敗しました',
+        duration: '分'
+      },
+      en: {
+        searchPlaceholder: 'Search by keyword',
+        genres: {
+          rain: 'Rain',
+          fire: 'Fire',
+          anime: 'Anime',
+          study: 'Study',
+          night: 'Night',
+          chill: 'Chill'
+        },
+        badge: {
+          popular: 'Popular',
+          new: 'New'
+        },
+        downloadBtn: 'Download',
+        emptyMessage: 'No packages found',
+        loading: 'Loading...',
+        error: 'Failed to load data',
+        duration: 'min'
+      }
+    };
+
+    // ======================================================
     // フォールバック用ローカルデータ（Firebase接続失敗時に使用）
     // ======================================================
     const LOCAL_PACKAGES = [
@@ -765,6 +811,62 @@
     const searchInput = document.getElementById('search-input');
     const genreFilter = document.getElementById('genre-filter');
     const genreButtons = genreFilter.querySelectorAll('.genre-btn');
+    const langButtons = document.querySelectorAll('.lang-btn');
+
+    // ======================================================
+    // i18n テキスト取得ヘルパー
+    // ======================================================
+    function t(key) {
+      const keys = key.split('.');
+      let value = I18N[state.currentLang];
+      for (const k of keys) {
+        value = value?.[k];
+      }
+      return value || key;
+    }
+
+    // ======================================================
+    // 言語切替
+    // ======================================================
+    function setLanguage(lang) {
+      if (lang === state.currentLang) return;
+      state.currentLang = lang;
+
+      // html lang属性を更新
+      document.documentElement.lang = lang;
+
+      // 言語ボタンの状態更新
+      langButtons.forEach(btn => {
+        if (btn.dataset.lang === lang) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      // UIテキストを更新
+      applyLanguageToUI();
+
+      // カードを再描画（タイトル等が言語に応じて変わる）
+      renderCards(state.filteredPackages);
+    }
+
+    // ======================================================
+    // UIテキストに言語を適用
+    // ======================================================
+    function applyLanguageToUI() {
+      // 検索バーのplaceholder
+      searchInput.placeholder = t('searchPlaceholder');
+
+      // ジャンルボタンのラベル
+      genreButtons.forEach(btn => {
+        const genre = btn.dataset.genre;
+        const labelSpan = btn.querySelector('[data-i18n]');
+        if (labelSpan) {
+          labelSpan.textContent = t(`genres.${genre}`);
+        }
+      });
+    }
 
     // ======================================================
     // フィルタ・検索ロジック
@@ -845,6 +947,14 @@
           toggleGenre(genre);
         });
       });
+
+      // 言語切替ボタン
+      langButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lang = btn.dataset.lang;
+          setLanguage(lang);
+        });
+      });
     }
 
     // ======================================================
@@ -858,10 +968,7 @@
       if (packages.length === 0) {
         const emptyMsg = document.createElement('div');
         emptyMsg.className = 'empty-message';
-        emptyMsg.setAttribute('data-i18n', 'emptyMessage');
-        emptyMsg.textContent = state.currentLang === 'ja'
-          ? '該当するパッケージがありません'
-          : 'No packages found';
+        emptyMsg.textContent = t('emptyMessage');
         cardsContainer.appendChild(emptyMsg);
         return;
       }
@@ -890,9 +997,9 @@
       // バッジHTML
       let badgeHtml = '';
       if (pkg.badge === 'popular') {
-        badgeHtml = `<span class="card-badge popular" data-i18n="badge.popular">人気</span>`;
+        badgeHtml = `<span class="card-badge popular">${t('badge.popular')}</span>`;
       } else if (pkg.badge === 'new') {
-        badgeHtml = `<span class="card-badge new" data-i18n="badge.new">新作</span>`;
+        badgeHtml = `<span class="card-badge new">${t('badge.new')}</span>`;
       }
 
       // サムネイルHTML（画像URLがあれば画像、なければプレースホルダー）
@@ -906,14 +1013,9 @@
 
       // ジャンルタグHTML
       const tagsHtml = pkg.genres.map(genre => {
-        const genreLabel = state.currentLang === 'ja'
-          ? getGenreLabelJa(genre)
-          : getGenreLabelEn(genre);
+        const genreLabel = t(`genres.${genre}`);
         return `<span class="card-tag" data-genre="${genre}">${genreLabel}</span>`;
       }).join('');
-
-      // ダウンロードボタンテキスト
-      const downloadText = state.currentLang === 'ja' ? 'ダウンロード' : 'Download';
 
       // カードHTML組み立て
       card.innerHTML = `
@@ -923,45 +1025,15 @@
         </div>
         <div class="card-body">
           <h3 class="card-title">${title}</h3>
-          <div class="card-info">⏱ ${pkg.duration}分 💾 ${pkg.fileSize}</div>
+          <div class="card-info">⏱ ${pkg.duration}${t('duration')} 💾 ${pkg.fileSize}</div>
           <div class="card-tags">${tagsHtml}</div>
-          <button type="button" class="card-download-btn" data-id="${pkg.id}" data-i18n="downloadBtn">
-            ${downloadText}
+          <button type="button" class="card-download-btn" data-id="${pkg.id}">
+            ${t('downloadBtn')}
           </button>
         </div>
       `;
 
       return card;
-    }
-
-    // ======================================================
-    // ジャンルラベル取得（JA）
-    // ======================================================
-    function getGenreLabelJa(genre) {
-      const labels = {
-        rain: '雨',
-        fire: '火',
-        anime: 'アニメ',
-        study: '勉強',
-        night: '夜',
-        chill: 'チル'
-      };
-      return labels[genre] || genre;
-    }
-
-    // ======================================================
-    // ジャンルラベル取得（EN）
-    // ======================================================
-    function getGenreLabelEn(genre) {
-      const labels = {
-        rain: 'Rain',
-        fire: 'Fire',
-        anime: 'Anime',
-        study: 'Study',
-        night: 'Night',
-        chill: 'Chill'
-      };
-      return labels[genre] || genre;
     }
 
     // ======================================================
