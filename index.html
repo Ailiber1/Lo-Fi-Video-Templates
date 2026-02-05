@@ -1506,9 +1506,20 @@
         handleDownload(pkg.id);
       });
 
-      // 動画プレビューのホバー再生
+      // 動画プレビューのホバー再生 + エラーハンドリング
       if (hasVideo) {
         const video = card.querySelector('video');
+        const thumbnail = card.querySelector('.card-thumbnail');
+
+        // 動画読み込みエラー時はプレースホルダーに切り替え
+        video.addEventListener('error', () => {
+          const emoji = GENRE_EMOJI[primaryGenre] || '🎵';
+          thumbnail.innerHTML = `
+            ${badgeHtml}
+            <div class="card-placeholder" data-genre="${primaryGenre}">${emoji}</div>
+          `;
+        });
+
         card.addEventListener('mouseenter', () => {
           video.play().catch(() => {});
         });
