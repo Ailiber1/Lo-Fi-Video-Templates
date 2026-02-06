@@ -12,15 +12,20 @@
        デザイントークン（CSS変数）
        ====================================================== */
     :root {
-      /* 背景色 - グラデーション対応 */
-      --bg-main: #F5F0E8;
-      --bg-gradient-start: #FDF8F3;
+      /* 背景色 - プレミアムグラデーション */
+      --bg-main: #F8F5F0;
+      --bg-gradient-start: #FFFCF8;
       --bg-gradient-mid: #F5EDE3;
-      --bg-gradient-end: #EDE4D8;
-      --bg-card: rgba(255, 255, 255, 0.7);
-      --bg-card-hover: rgba(255, 255, 255, 0.9);
+      --bg-gradient-end: #E8DFD3;
+      --bg-card: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.75));
+      --bg-card-solid: rgba(255, 255, 255, 0.85);
+      --bg-card-hover: linear-gradient(145deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.9));
       --bg-header: transparent;
-      --glow-color: rgba(212, 165, 116, 0.15);
+      --glow-color: rgba(212, 165, 116, 0.2);
+      --shine-color: rgba(255, 255, 255, 0.9);
+      --highlight-top: rgba(255, 255, 255, 0.8);
+      --shadow-soft: rgba(180, 160, 140, 0.15);
+      --shadow-medium: rgba(140, 120, 100, 0.12);
 
       /* テキスト色 */
       --text-primary: #2D2D2D;
@@ -75,27 +80,32 @@
     }
 
     /* ======================================================
-       ダークモード - 光沢感のあるグラデーション
+       ダークモード - プレミアム光沢グラデーション
        ====================================================== */
     [data-theme="dark"] {
-      --bg-main: #0f0f1a;
-      --bg-gradient-start: #1a1a2e;
-      --bg-gradient-mid: #16162b;
-      --bg-gradient-end: #0f0f1a;
-      --bg-card: rgba(40, 40, 70, 0.6);
-      --bg-card-hover: rgba(50, 50, 85, 0.8);
-      --glow-color: rgba(123, 140, 222, 0.1);
-      --text-primary: #e8e8f0;
-      --text-secondary: #9999b8;
-      --accent-copper: #D4A574;
-      --accent-copper-hover: #E0B584;
-      --glass-bg: rgba(37, 37, 61, 0.7);
-      --glass-border: rgba(123, 140, 222, 0.3);
-      --genre-btn-bg: #25253d;
-      --genre-btn-border: #3d3d5c;
-      --genre-btn-text: #b8b8d0;
-      --genre-btn-active-bg: #7b8cde;
-      --genre-btn-active-text: #1a1a2e;
+      --bg-main: #0a0a14;
+      --bg-gradient-start: #151528;
+      --bg-gradient-mid: #0f0f20;
+      --bg-gradient-end: #0a0a14;
+      --bg-card: linear-gradient(145deg, rgba(45, 45, 80, 0.8), rgba(30, 30, 55, 0.6));
+      --bg-card-solid: rgba(35, 35, 65, 0.75);
+      --bg-card-hover: linear-gradient(145deg, rgba(55, 55, 95, 0.9), rgba(40, 40, 70, 0.75));
+      --glow-color: rgba(100, 120, 200, 0.15);
+      --shine-color: rgba(140, 160, 255, 0.3);
+      --highlight-top: rgba(180, 190, 255, 0.15);
+      --shadow-soft: rgba(0, 0, 20, 0.4);
+      --shadow-medium: rgba(0, 0, 30, 0.5);
+      --text-primary: #f0f0f8;
+      --text-secondary: #a0a0c0;
+      --accent-copper: #E0B080;
+      --accent-copper-hover: #F0C090;
+      --glass-bg: rgba(40, 40, 70, 0.75);
+      --glass-border: rgba(140, 160, 255, 0.25);
+      --genre-btn-bg: linear-gradient(145deg, rgba(50, 50, 85, 0.9), rgba(35, 35, 60, 0.7));
+      --genre-btn-border: rgba(100, 110, 180, 0.4);
+      --genre-btn-text: #c0c0e0;
+      --genre-btn-active-bg: linear-gradient(145deg, #8090e0, #6070c0);
+      --genre-btn-active-text: #ffffff;
     }
 
     /* ======================================================
@@ -128,7 +138,7 @@
       position: relative;
     }
 
-    /* 光沢オーバーレイ */
+    /* プレミアム光沢オーバーレイ */
     body::before {
       content: '';
       position: fixed;
@@ -137,11 +147,28 @@
       right: 0;
       bottom: 0;
       background:
-        radial-gradient(ellipse at 20% 20%, var(--glow-color) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 80%, var(--glow-color) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 50%, var(--glow-color) 0%, transparent 70%);
+        radial-gradient(ellipse at 15% 10%, var(--glow-color) 0%, transparent 40%),
+        radial-gradient(ellipse at 85% 15%, var(--shine-color) 0%, transparent 35%),
+        radial-gradient(ellipse at 75% 85%, var(--glow-color) 0%, transparent 45%),
+        radial-gradient(ellipse at 25% 90%, var(--shine-color) 0%, transparent 30%),
+        radial-gradient(ellipse at 50% 50%, var(--glow-color) 0%, transparent 60%);
       pointer-events: none;
       z-index: 0;
+    }
+
+    /* メインコンテンツ背景グロー */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 120%;
+      height: 120%;
+      background: radial-gradient(ellipse at center, var(--glow-color) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.5;
     }
 
     /* ======================================================
@@ -437,35 +464,56 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 10px 18px;
+      padding: 10px 20px;
       font-size: 14px;
       font-weight: 500;
       font-family: var(--font-family);
       background: var(--genre-btn-bg);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(12px) saturate(150%);
+      -webkit-backdrop-filter: blur(12px) saturate(150%);
       border: 1px solid var(--genre-btn-border);
       border-radius: var(--radius-button);
       color: var(--genre-btn-text);
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       box-shadow:
-        0 2px 8px rgba(0, 0, 0, 0.04),
-        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        0 2px 12px var(--shadow-soft),
+        inset 0 1px 0 var(--highlight-top);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .genre-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.3), transparent);
+      pointer-events: none;
+      border-radius: var(--radius-button) var(--radius-button) 0 0;
     }
 
     .genre-btn:hover {
-      border-color: var(--text-secondary);
+      border-color: var(--accent-copper);
       box-shadow:
-        0 4px 12px rgba(0, 0, 0, 0.08),
-        inset 0 1px 0 rgba(255, 255, 255, 0.6);
-      transform: translateY(-1px);
+        0 6px 20px var(--shadow-medium),
+        inset 0 1px 0 var(--shine-color);
+      transform: translateY(-2px);
     }
 
     .genre-btn.active {
-      background-color: var(--genre-btn-active-bg);
-      border-color: var(--genre-btn-active-bg);
+      background: var(--genre-btn-active-bg);
+      border-color: transparent;
       color: var(--genre-btn-active-text);
+      box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    [data-theme="dark"] .genre-btn::before {
+      background: linear-gradient(180deg, rgba(180, 190, 255, 0.15), transparent);
     }
 
     .genre-btn .emoji {
@@ -513,42 +561,82 @@
     }
 
     /* ======================================================
-       パッケージカード - グラスモーフィズムスタイル
+       パッケージカード - プレミアムグラスモーフィズム
        ====================================================== */
     .package-card {
       position: relative;
       border-radius: var(--radius-card);
       overflow: hidden;
       cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       background: var(--bg-card);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      border: 1px solid var(--highlight-top);
       box-shadow:
-        0 4px 16px rgba(0, 0, 0, 0.08),
-        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        0 4px 20px var(--shadow-soft),
+        0 8px 40px var(--shadow-medium),
+        inset 0 1px 0 var(--highlight-top),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+    }
+
+    /* カード上部のシャイン効果 */
+    .package-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(
+        180deg,
+        var(--highlight-top) 0%,
+        transparent 100%
+      );
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.5;
+      border-radius: var(--radius-card) var(--radius-card) 0 0;
     }
 
     .package-card:hover {
-      transform: translateY(-4px) scale(1.01);
+      transform: translateY(-8px) scale(1.02);
       background: var(--bg-card-hover);
       box-shadow:
-        0 12px 32px rgba(0, 0, 0, 0.12),
-        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        0 16px 48px var(--shadow-medium),
+        0 24px 64px var(--shadow-soft),
+        inset 0 1px 0 var(--shine-color),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.05);
     }
 
+    .package-card:hover::before {
+      opacity: 0.8;
+    }
+
+    /* ダークモード カード */
     [data-theme="dark"] .package-card {
-      border: 1px solid rgba(123, 140, 222, 0.15);
+      border: 1px solid rgba(140, 160, 255, 0.2);
       box-shadow:
-        0 4px 16px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        0 4px 20px rgba(0, 0, 30, 0.5),
+        0 8px 40px rgba(0, 0, 50, 0.3),
+        inset 0 1px 0 rgba(180, 190, 255, 0.1),
+        0 0 60px rgba(100, 120, 200, 0.05);
+    }
+
+    [data-theme="dark"] .package-card::before {
+      background: linear-gradient(
+        180deg,
+        rgba(140, 160, 255, 0.1) 0%,
+        transparent 100%
+      );
     }
 
     [data-theme="dark"] .package-card:hover {
       box-shadow:
-        0 12px 32px rgba(123, 140, 222, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        0 16px 48px rgba(0, 0, 50, 0.5),
+        0 24px 64px rgba(100, 120, 200, 0.15),
+        inset 0 1px 0 rgba(180, 190, 255, 0.2),
+        0 0 80px rgba(100, 120, 200, 0.1);
     }
 
     .card-thumbnail {
@@ -805,6 +893,107 @@
     }
 
     /* ======================================================
+       ダウンロードモーダル
+       ====================================================== */
+    .download-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .download-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .download-content {
+      text-align: center;
+      color: #fff;
+      max-width: 500px;
+      padding: 40px;
+    }
+
+    .download-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(255, 255, 255, 0.2);
+      border-top-color: var(--accent-copper);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 24px;
+    }
+
+    .download-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .download-message {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .download-progress {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      height: 8px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .download-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-copper), var(--accent-warm));
+      border-radius: 10px;
+      width: 0%;
+      animation: progressPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes progressPulse {
+      0%, 100% { width: 30%; opacity: 1; }
+      50% { width: 70%; opacity: 0.8; }
+    }
+
+    .download-note {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.5);
+      margin-top: 20px;
+    }
+
+    .download-close-btn {
+      margin-top: 24px;
+      padding: 12px 32px;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: var(--radius-button);
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .download-close-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* ======================================================
        レスポンシブ
        ====================================================== */
     @media (max-width: 1199px) {
@@ -1008,6 +1197,31 @@
     </div>
   </div>
 
+  <!-- ダウンロードモーダル -->
+  <div class="download-overlay" id="download-overlay">
+    <div class="download-content">
+      <div class="download-spinner"></div>
+      <h2 class="download-title" id="download-title">ダウンロード準備中...</h2>
+      <p class="download-message" id="download-message">
+        ファイルを準備しています。<br>
+        しばらくお待ちください。
+      </p>
+      <div class="download-progress">
+        <div class="download-progress-bar"></div>
+      </div>
+      <p class="download-note">
+        ※ 大容量ファイルのため、Googleドライブの確認画面が<br>
+        別タブで開く場合があります。
+      </p>
+      <button type="button" class="download-close-btn" id="download-close-btn">
+        閉じる
+      </button>
+    </div>
+  </div>
+
+  <!-- 非表示iframe（ダウンロード用） -->
+  <iframe id="download-frame" style="display: none;"></iframe>
+
   <!-- JavaScript -->
   <script type="module">
     // Firebase SDK
@@ -1034,6 +1248,24 @@
     let storage = null;
     let analytics = null;
 
+    // 管理者モード（トラッキング除外）
+    // URLに ?admin=true を追加するとそのブラウザでトラッキングが無効化されます
+    // 解除するには ?admin=false を追加してアクセスしてください
+    function checkAdminMode() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const adminParam = urlParams.get('admin');
+      if (adminParam === 'true') {
+        localStorage.setItem('lofi_admin_mode', 'true');
+        console.log('🔧 管理者モード: ON（トラッキング無効）');
+      } else if (adminParam === 'false') {
+        localStorage.removeItem('lofi_admin_mode');
+        console.log('🔧 管理者モード: OFF（トラッキング有効）');
+      }
+      return localStorage.getItem('lofi_admin_mode') === 'true';
+    }
+
+    const isAdminMode = checkAdminMode();
+
     // ジャンル絵文字
     const GENRE_EMOJI = {
       rain: '🌧️',
@@ -1056,7 +1288,13 @@
         emptyMessage: '該当するパッケージがありません',
         loading: '読み込み中...',
         duration: '分',
-        comingSoon: '準備中です。もうしばらくお待ちください。'
+        comingSoon: '準備中です。もうしばらくお待ちください。',
+        download: {
+          title: 'ダウンロード準備中...',
+          message: 'ファイルを準備しています。<br>しばらくお待ちください。',
+          note: '※ 大容量ファイルのため、Googleドライブの確認画面が<br>別タブで開く場合があります。',
+          close: '閉じる'
+        }
       },
       en: {
         searchPlaceholder: 'Search by keyword',
@@ -1068,7 +1306,13 @@
         emptyMessage: 'No packages found',
         loading: 'Loading...',
         duration: 'min',
-        comingSoon: 'Coming soon. Please wait.'
+        comingSoon: 'Coming soon. Please wait.',
+        download: {
+          title: 'Preparing Download...',
+          message: 'Preparing your file.<br>Please wait a moment.',
+          note: '※ Due to large file size, a Google Drive confirmation<br>page may open in a new tab.',
+          close: 'Close'
+        }
       }
     };
 
@@ -1195,6 +1439,11 @@
 
     // アナリティクス イベントトラッキング
     function trackEvent(eventName, params = {}) {
+      // 管理者モードの場合はトラッキングをスキップ
+      if (isAdminMode) {
+        console.log(`📊 [トラッキング除外] ${eventName}:`, params);
+        return;
+      }
       if (analytics) {
         try {
           logEvent(analytics, eventName, params);
@@ -1235,6 +1484,23 @@
       return null;
     }
 
+    // ダウンロードモーダル要素
+    const downloadOverlay = document.getElementById('download-overlay');
+    const downloadTitle = document.getElementById('download-title');
+    const downloadMessage = document.getElementById('download-message');
+    const downloadCloseBtn = document.getElementById('download-close-btn');
+
+    function showDownloadModal() {
+      downloadTitle.textContent = t('download.title');
+      downloadMessage.innerHTML = t('download.message');
+      downloadCloseBtn.textContent = t('download.close');
+      downloadOverlay.classList.add('active');
+    }
+
+    function hideDownloadModal() {
+      downloadOverlay.classList.remove('active');
+    }
+
     async function handleDownload(pkgId) {
       const pkg = state.packages.find(p => p.id === pkgId);
       if (!pkg) return;
@@ -1248,10 +1514,16 @@
           package_title: title,
           file_size: pkg.size || 'unknown'
         });
-        const a = document.createElement('a');
-        a.href = pkg.downloadUrl;
-        a.target = '_blank';
-        a.click();
+
+        // ダウンロードモーダルを表示
+        showDownloadModal();
+
+        // 少し遅延してからダウンロードを開始（UX向上）
+        setTimeout(() => {
+          // 新しいタブでダウンロードリンクを開く
+          window.open(pkg.downloadUrl, '_blank');
+        }, 1500);
+
         return;
       }
 
@@ -1264,9 +1536,14 @@
             package_title: title,
             file_size: pkg.size || 'unknown'
           });
-          const a = document.createElement('a');
-          a.href = url;
-          a.click();
+
+          // ダウンロードモーダルを表示
+          showDownloadModal();
+
+          setTimeout(() => {
+            window.open(url, '_blank');
+          }, 1500);
+
           return;
         } catch (e) {}
       }
@@ -1443,6 +1720,9 @@
       modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
       document.addEventListener('keydown', e => { if (e.key === 'Escape' && modalOverlay.classList.contains('active')) closeModal(); });
       modalDownloadBtn.addEventListener('click', () => { if (currentModalPkgId) handleDownload(currentModalPkgId); });
+      // ダウンロードモーダルの閉じるボタン
+      downloadCloseBtn.addEventListener('click', hideDownloadModal);
+      downloadOverlay.addEventListener('click', e => { if (e.target === downloadOverlay) hideDownloadModal(); });
     }
 
     // 描画
