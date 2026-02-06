@@ -1775,18 +1775,20 @@
         genres: ['rain', 'study'],
         durationMinutes: 60,
         size: '1.2GB',
+        quality: 'HD',
         badge: 'popular',
         order: 1
       },
       {
         id: 'fire-lofi-healing',
-        title_ja: '焚き火×Lo-Fi 癒し系',
-        title_en: 'Bonfire × Lo-Fi Healing',
+        title_ja: '暖炉×Lo-Fi 癒し系',
+        title_en: 'Fireplace × Lo-Fi Healing',
         genres: ['fire', 'chill'],
         durationMinutes: 60,
         size: '1.27GB',
+        quality: 'HD',
         badge: 'new',
-        youtubeId: 'TKbyXrcEpuQ',
+        youtubeId: 'kniWKm-6HmM',
         downloadUrl: 'https://drive.google.com/uc?export=download&confirm=t&id=1Bd4ZEjZEHPeUt0TLCSpmMedo1wTaU6KA',
         order: 2
       },
@@ -1797,6 +1799,7 @@
         genres: ['study', 'anime', 'rain'],
         durationMinutes: 60,
         size: '900MB',
+        quality: 'HD',
         badge: 'new',
         youtubeId: 'tuAyzHieJhw',
         downloadUrl: 'https://drive.google.com/uc?export=download&confirm=t&id=1TxnXYZpwH0OS-RcrxZ6ut01nmOmX-sxf',
@@ -1809,6 +1812,7 @@
         genres: ['night', 'anime'],
         durationMinutes: 60,
         size: '1.5GB',
+        quality: 'HD',
         badge: 'popular',
         order: 4
       },
@@ -1819,6 +1823,7 @@
         genres: ['rain', 'study'],
         durationMinutes: 60,
         size: '1.1GB',
+        quality: 'HD',
         badge: 'new',
         order: 5
       },
@@ -1829,6 +1834,7 @@
         genres: ['chill', 'study'],
         durationMinutes: 60,
         size: '1.3GB',
+        quality: 'HD',
         badge: 'popular',
         order: 6
       },
@@ -1839,6 +1845,7 @@
         genres: ['rain', 'chill'],
         durationMinutes: 60,
         size: '1.0GB',
+        quality: 'HD',
         badge: 'new',
         order: 7
       },
@@ -1849,6 +1856,7 @@
         genres: ['chill', 'night'],
         durationMinutes: 60,
         size: '1.4GB',
+        quality: 'HD',
         badge: 'popular',
         order: 8
       },
@@ -1859,6 +1867,7 @@
         genres: ['night', 'chill'],
         durationMinutes: 60,
         size: '1.1GB',
+        quality: 'HD',
         badge: 'new',
         order: 9
       }
@@ -2179,7 +2188,7 @@
         genres: pkg.genres.join(',')
       });
       modalTitle.textContent = title;
-      modalInfo.textContent = `⏱ ${pkg.durationMinutes || 60}${t('duration')} 💾 ${pkg.size || '1.0GB'}`;
+      modalInfo.textContent = `📺 ${pkg.quality || 'HD'} · ⏱ ${pkg.durationMinutes || 60}${t('duration')} · 💾 ${pkg.size || '1.0GB'}`;
       modalTags.innerHTML = pkg.genres.map(g => `<span class="modal-tag card-tag" data-genre="${g}">${t(`genres.${g}`)}</span>`).join('');
       modalDownloadBtn.textContent = t('downloadBtn');
 
@@ -2367,7 +2376,7 @@
         <div class="card-thumbnail">${indicatorHtml}${thumbnailHtml}</div>
         <div class="card-body">
           <h3 class="card-title">${title}</h3>
-          <div class="card-info">${pkg.durationMinutes || 60}${t('duration')} · ${pkg.size || '1.0GB'}</div>
+          <div class="card-info">${pkg.quality || 'HD'} · ${pkg.durationMinutes || 60}${t('duration')} · ${pkg.size || '1.0GB'}</div>
         </div>
       `;
 
