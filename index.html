@@ -299,13 +299,27 @@
       overflow: hidden;
     }
 
-    .hero-video-container {
+    .hero-slider {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       z-index: 1;
+    }
+
+    .hero-slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 1.2s ease-in-out;
+    }
+
+    .hero-slide.active {
+      opacity: 1;
     }
 
     .hero-video {
@@ -404,25 +418,33 @@
       transform: scale(1.05);
     }
 
-    /* スライダードット（装飾用） */
+    /* スライダードットナビゲーション */
     .hero-dots {
       display: flex;
-      gap: 8px;
+      gap: 12px;
       justify-content: center;
       margin-top: 30px;
     }
 
     .hero-dot {
-      width: 8px;
-      height: 8px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.35);
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .hero-dot:hover {
+      background: rgba(255, 255, 255, 0.6);
+      transform: scale(1.2);
     }
 
     .hero-dot.active {
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.95);
+      transform: scale(1.1);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
     }
 
     /* ======================================================
@@ -1152,10 +1174,17 @@
 
   <!-- ヒーローセクション -->
   <section class="hero-section">
-    <div class="hero-video-container">
-      <video class="hero-video" autoplay muted loop playsinline>
-        <source src="fireplace-loop.mp4" type="video/mp4">
-      </video>
+    <div class="hero-slider" id="hero-slider">
+      <div class="hero-slide active" data-slide="0">
+        <video class="hero-video" autoplay muted loop playsinline>
+          <source src="fireplace-loop.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="hero-slide" data-slide="1">
+        <video class="hero-video" autoplay muted loop playsinline>
+          <source src="girl-studying-loop.mp4" type="video/mp4">
+        </video>
+      </div>
     </div>
     <div class="hero-overlay"></div>
     <div class="hero-content">
@@ -1173,11 +1202,9 @@
           🔍
         </button>
       </div>
-      <div class="hero-dots">
-        <span class="hero-dot active"></span>
-        <span class="hero-dot"></span>
-        <span class="hero-dot"></span>
-        <span class="hero-dot"></span>
+      <div class="hero-dots" id="hero-dots">
+        <span class="hero-dot active" data-slide="0"></span>
+        <span class="hero-dot" data-slide="1"></span>
       </div>
     </div>
   </section>
@@ -1612,6 +1639,72 @@
       alert(t('comingSoon'));
     }
 
+    // ======================================================
+    // ヒーロースライダー
+    // ======================================================
+    const heroSlides = document.querySelectorAll('.hero-slide');
+    const heroDots = document.querySelectorAll('.hero-dot');
+    let currentSlide = 0;
+    let slideInterval = null;
+    const SLIDE_DURATION = 8000; // 8秒ごとに切り替え
+
+    function goToSlide(index) {
+      // 範囲チェック
+      if (index < 0) index = heroSlides.length - 1;
+      if (index >= heroSlides.length) index = 0;
+
+      // 現在のスライドを非アクティブに
+      heroSlides[currentSlide].classList.remove('active');
+      heroDots[currentSlide].classList.remove('active');
+
+      // 新しいスライドをアクティブに
+      currentSlide = index;
+      heroSlides[currentSlide].classList.add('active');
+      heroDots[currentSlide].classList.add('active');
+
+      // スライドイベントをトラッキング
+      trackEvent('hero_slide_change', { slide_index: currentSlide });
+    }
+
+    function nextSlide() {
+      goToSlide(currentSlide + 1);
+    }
+
+    function startSlideshow() {
+      stopSlideshow();
+      slideInterval = setInterval(nextSlide, SLIDE_DURATION);
+    }
+
+    function stopSlideshow() {
+      if (slideInterval) {
+        clearInterval(slideInterval);
+        slideInterval = null;
+      }
+    }
+
+    function setupHeroSlider() {
+      // ドットクリックイベント
+      heroDots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+          goToSlide(index);
+          // クリック後、スライドショーをリセット
+          startSlideshow();
+        });
+      });
+
+      // 自動スライドショー開始
+      startSlideshow();
+
+      // ユーザーがページを離れた時は停止、戻った時は再開
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          stopSlideshow();
+        } else {
+          startSlideshow();
+        }
+      });
+    }
+
     // DOM
     const cardsContainer = document.getElementById('cards-container');
     const searchInput = document.getElementById('search-input');
@@ -1860,6 +1953,7 @@
     async function init() {
       loadSavedTheme();
       setupEventListeners();
+      setupHeroSlider();
       initializeFirebase();
       state.isLoading = true;
       showLoading();
