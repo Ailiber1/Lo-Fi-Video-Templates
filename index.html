@@ -621,8 +621,7 @@
       border-radius: var(--radius-card) var(--radius-card) 0 0;
     }
 
-    .package-card:hover {
-      transform: translateY(-8px) scale(1.02);
+    .package-card.visible:hover {
       background: var(--bg-card-hover);
       box-shadow:
         0 16px 48px var(--shadow-medium),
@@ -631,7 +630,7 @@
         inset 0 -1px 0 rgba(0, 0, 0, 0.05);
     }
 
-    .package-card:hover::before {
+    .package-card.visible:hover::before {
       opacity: 0.8;
     }
 
@@ -653,7 +652,7 @@
       );
     }
 
-    [data-theme="dark"] .package-card:hover {
+    [data-theme="dark"] .package-card.visible:hover {
       box-shadow:
         0 16px 48px rgba(0, 0, 50, 0.5),
         0 24px 64px rgba(100, 120, 200, 0.15),
@@ -1143,6 +1142,306 @@
         padding: 24px 16px;
       }
     }
+
+    /* ======================================================
+       統計セクション
+       ====================================================== */
+    .stats-section {
+      position: relative;
+      z-index: 1;
+      max-width: var(--content-max-width);
+      margin: 0 auto;
+      padding: 40px var(--section-padding) 0;
+    }
+
+    .stats-grid {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 24px 32px;
+      background: var(--bg-card);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      border: 1px solid var(--highlight-top);
+      border-radius: var(--radius-card);
+      box-shadow:
+        0 4px 20px var(--shadow-soft),
+        inset 0 1px 0 var(--highlight-top);
+      min-width: 160px;
+      transition: transform 0.3s ease;
+    }
+
+    .stat-item:hover {
+      transform: translateY(-4px);
+    }
+
+    .stat-number {
+      font-family: var(--font-display);
+      font-size: 36px;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--accent-copper);
+      line-height: 1.2;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    /* ======================================================
+       カード出現アニメーション
+       ====================================================== */
+    .package-card {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .package-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .package-card.visible:hover {
+      transform: translateY(-8px) scale(1.02);
+    }
+
+    /* ダウンロード可能インジケーター */
+    .card-download-indicator {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(93, 173, 93, 0.9);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: var(--radius-badge);
+      backdrop-filter: blur(8px);
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .card-download-indicator .indicator-dot {
+      width: 6px;
+      height: 6px;
+      background: #fff;
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    /* サンプルバッジ */
+    .card-sample-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(100, 100, 120, 0.75);
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: var(--radius-badge);
+      backdrop-filter: blur(8px);
+      z-index: 2;
+    }
+
+    /* ======================================================
+       モバイルハンバーガーメニュー
+       ====================================================== */
+    .mobile-menu-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #fff;
+      font-size: 20px;
+    }
+
+    .mobile-menu-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .mobile-nav-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 500;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+    }
+
+    .mobile-nav-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .mobile-nav-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 44px;
+      height: 44px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mobile-nav-link {
+      color: #fff;
+      text-decoration: none;
+      font-size: 24px;
+      font-weight: 500;
+      opacity: 0.9;
+      transition: opacity 0.2s;
+    }
+
+    .mobile-nav-link:hover {
+      opacity: 1;
+    }
+
+    @media (max-width: 899px) {
+      .mobile-menu-btn {
+        display: flex;
+      }
+    }
+
+    /* ======================================================
+       フッター
+       ====================================================== */
+    .footer {
+      position: relative;
+      z-index: 1;
+      margin-top: 80px;
+      padding: 48px var(--section-padding) 32px;
+      border-top: 1px solid var(--highlight-top);
+    }
+
+    .footer-inner {
+      max-width: var(--content-max-width);
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .footer-brand {
+      text-align: center;
+    }
+
+    .footer-logo {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .footer-tagline {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .footer-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+
+    .footer-link:hover {
+      color: var(--accent-copper);
+    }
+
+    .footer-divider {
+      width: 60px;
+      height: 1px;
+      background: var(--highlight-top);
+    }
+
+    .footer-copy {
+      font-size: 12px;
+      color: var(--text-secondary);
+      opacity: 0.7;
+    }
+
+    @media (max-width: 600px) {
+      .stats-grid {
+        gap: 16px;
+      }
+
+      .stat-item {
+        min-width: 120px;
+        padding: 16px 20px;
+      }
+
+      .stat-number {
+        font-size: 28px;
+      }
+
+      .footer {
+        margin-top: 48px;
+        padding: 32px var(--section-padding) 24px;
+      }
+
+      .footer-links {
+        gap: 16px;
+      }
+    }
+
+    /* ======================================================
+       スムーススクロール
+       ====================================================== */
+    html {
+      scroll-behavior: smooth;
+    }
   </style>
 </head>
 <body>
@@ -1156,7 +1455,7 @@
       <nav class="header-nav">
         <a href="#" class="nav-link" data-i18n="nav.home">ホーム</a>
         <a href="#packages" class="nav-link" data-i18n="nav.packages">パッケージ</a>
-        <a href="#" class="nav-link" data-i18n="nav.about">概要</a>
+        <a href="#about" class="nav-link" data-i18n="nav.about">概要</a>
       </nav>
 
       <div class="header-controls">
@@ -1168,9 +1467,18 @@
           <button type="button" class="lang-btn active" data-lang="ja">JA</button>
           <button type="button" class="lang-btn" data-lang="en">EN</button>
         </div>
+        <button type="button" class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Menu">☰</button>
       </div>
     </div>
   </header>
+
+  <!-- モバイルナビゲーション -->
+  <div class="mobile-nav-overlay" id="mobile-nav-overlay">
+    <button type="button" class="mobile-nav-close" id="mobile-nav-close">&times;</button>
+    <a href="#" class="mobile-nav-link" data-i18n="nav.home">ホーム</a>
+    <a href="#packages" class="mobile-nav-link" data-i18n="nav.packages">パッケージ</a>
+    <a href="#about" class="mobile-nav-link" data-i18n="nav.about">概要</a>
+  </div>
 
   <!-- ヒーローセクション -->
   <section class="hero-section">
@@ -1205,6 +1513,28 @@
       <div class="hero-dots" id="hero-dots">
         <span class="hero-dot active" data-slide="0"></span>
         <span class="hero-dot" data-slide="1"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 統計セクション -->
+  <section class="stats-section">
+    <div class="stats-grid" id="stats-grid">
+      <div class="stat-item">
+        <div class="stat-number" id="stat-packages">9</div>
+        <div class="stat-label" data-i18n="stats.packages">パッケージ数</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">60<span style="font-size: 20px; opacity: 0.7;">min</span></div>
+        <div class="stat-label" data-i18n="stats.duration">各動画の長さ</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">2</div>
+        <div class="stat-label" data-i18n="stats.downloadable">ダウンロード可能</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" data-i18n="stats.priceValue">無料</div>
+        <div class="stat-label" data-i18n="stats.price">すべてのパッケージ</div>
       </div>
     </div>
   </section>
@@ -1291,6 +1621,22 @@
     </div>
   </div>
 
+  <!-- フッター -->
+  <footer class="footer" id="about">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">Lo-Fi Templates</div>
+        <div class="footer-tagline" data-i18n="footer.tagline">リラックスできるLo-Fi動画テンプレートを無料で</div>
+      </div>
+      <div class="footer-links">
+        <a href="#" class="footer-link" data-i18n="nav.home">ホーム</a>
+        <a href="#packages" class="footer-link" data-i18n="nav.packages">パッケージ</a>
+      </div>
+      <div class="footer-divider"></div>
+      <div class="footer-copy">&copy; 2025 Lo-Fi Video Templates. All rights reserved.</div>
+    </div>
+  </footer>
+
   <!-- 非表示iframe（ダウンロード用） -->
   <iframe id="download-frame" style="display: none;"></iframe>
 
@@ -1368,6 +1714,20 @@
           notice: '確認画面で「このままダウンロード」を<br>クリックしてください',
           start: 'ダウンロードを開始',
           cancel: 'キャンセル'
+        },
+        stats: {
+          packages: 'パッケージ数',
+          duration: '各動画の長さ',
+          downloadable: 'ダウンロード可能',
+          price: 'すべてのパッケージ',
+          priceValue: '無料'
+        },
+        footer: {
+          tagline: 'リラックスできるLo-Fi動画テンプレートを無料で'
+        },
+        cardIndicator: {
+          available: 'DL可能',
+          sample: 'サンプル'
         }
       },
       en: {
@@ -1388,6 +1748,20 @@
           notice: 'Click "Download anyway" on the<br>confirmation page',
           start: 'Start Download',
           cancel: 'Cancel'
+        },
+        stats: {
+          packages: 'Total Packages',
+          duration: 'Duration Each',
+          downloadable: 'Available Now',
+          price: 'All Packages',
+          priceValue: 'Free'
+        },
+        footer: {
+          tagline: 'Free relaxing Lo-Fi video templates for everyone'
+        },
+        cardIndicator: {
+          available: 'Available',
+          sample: 'Sample'
         }
       }
     };
@@ -1752,9 +2126,12 @@
     function applyLanguageToUI() {
       searchInput.placeholder = t('searchPlaceholder');
       document.querySelector('[data-i18n="sectionTitle"]').textContent = t('sectionTitle');
-      document.querySelectorAll('[data-i18n^="nav."]').forEach(el => {
+      // すべてのdata-i18n属性を持つ要素を更新
+      document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.dataset.i18n;
-        el.textContent = t(key);
+        if (key === 'sectionTitle') return; // 既に処理済み
+        const value = t(key);
+        if (value && value !== key) el.textContent = value;
       });
       genreButtons.forEach(btn => {
         const genre = btn.dataset.genre;
@@ -1860,6 +2237,43 @@
       genreButtons.forEach(btn => btn.classList.toggle('active', state.selectedGenres.includes(btn.dataset.genre)));
     }
 
+    // モバイルメニュー
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileNavOverlay = document.getElementById('mobile-nav-overlay');
+    const mobileNavClose = document.getElementById('mobile-nav-close');
+    const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+
+    function openMobileMenu() {
+      mobileNavOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobileMenu() {
+      mobileNavOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // スクロールアニメーション（IntersectionObserver）
+    function setupScrollAnimations() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry, index) => {
+          if (entry.isIntersecting) {
+            // カードごとに少しずらして表示
+            const card = entry.target;
+            const delay = Array.from(card.parentElement.children).indexOf(card) * 80;
+            setTimeout(() => {
+              card.classList.add('visible');
+            }, delay);
+            observer.unobserve(card);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+
+      document.querySelectorAll('.package-card').forEach(card => {
+        observer.observe(card);
+      });
+    }
+
     // イベント
     // 検索イベントのデバウンス用
     let searchDebounceTimer = null;
@@ -1884,12 +2298,23 @@
       themeToggle.addEventListener('click', toggleTheme);
       modalClose.addEventListener('click', closeModal);
       modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
-      document.addEventListener('keydown', e => { if (e.key === 'Escape' && modalOverlay.classList.contains('active')) closeModal(); });
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+          if (modalOverlay.classList.contains('active')) closeModal();
+          if (mobileNavOverlay.classList.contains('active')) closeMobileMenu();
+        }
+      });
       modalDownloadBtn.addEventListener('click', () => { if (currentModalPkgId) handleDownload(currentModalPkgId); });
       // ダウンロード確認モーダルのボタン
       downloadStartBtn.addEventListener('click', startDownload);
       downloadCloseBtn.addEventListener('click', hideDownloadModal);
       downloadOverlay.addEventListener('click', e => { if (e.target === downloadOverlay) hideDownloadModal(); });
+      // モバイルメニュー
+      mobileMenuBtn.addEventListener('click', openMobileMenu);
+      mobileNavClose.addEventListener('click', closeMobileMenu);
+      mobileNavLinks.forEach(link => {
+        link.addEventListener('click', () => closeMobileMenu());
+      });
     }
 
     // 描画
@@ -1904,6 +2329,8 @@
         return;
       }
       packages.forEach(pkg => cardsContainer.appendChild(createCardElement(pkg)));
+      // カードのスクロールアニメーションを再設定
+      setupScrollAnimations();
     }
 
     function createCardElement(pkg) {
@@ -1931,11 +2358,16 @@
         thumbnailHtml = `<div class="card-placeholder" data-genre="${primaryGenre}">${emoji}</div>${playIconHtml}`;
       }
 
+      const hasDownload = !!(pkg.downloadUrl || pkg.downloadPath);
+      const indicatorHtml = hasDownload
+        ? `<div class="card-download-indicator"><span class="indicator-dot"></span>${t('cardIndicator.available')}</div>`
+        : `<div class="card-sample-badge">${t('cardIndicator.sample')}</div>`;
+
       card.innerHTML = `
-        <div class="card-thumbnail">${thumbnailHtml}</div>
+        <div class="card-thumbnail">${indicatorHtml}${thumbnailHtml}</div>
         <div class="card-body">
           <h3 class="card-title">${title}</h3>
-          <div class="card-info">${pkg.durationMinutes || 60}${t('duration')}</div>
+          <div class="card-info">${pkg.durationMinutes || 60}${t('duration')} · ${pkg.size || '1.0GB'}</div>
         </div>
       `;
 
