@@ -893,7 +893,7 @@
     }
 
     /* ======================================================
-       ダウンロードモーダル
+       ダウンロード確認モーダル
        ====================================================== */
     .download-overlay {
       position: fixed;
@@ -901,9 +901,9 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.9);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -922,75 +922,116 @@
     .download-content {
       text-align: center;
       color: #fff;
-      max-width: 500px;
+      max-width: 420px;
       padding: 40px;
+      background: linear-gradient(145deg, rgba(50, 50, 70, 0.9), rgba(30, 30, 45, 0.95));
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
     }
 
-    .download-spinner {
-      width: 60px;
-      height: 60px;
-      border: 4px solid rgba(255, 255, 255, 0.2);
-      border-top-color: var(--accent-copper);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 24px;
-    }
-
-    .download-title {
-      font-size: 24px;
-      font-weight: 600;
-      margin-bottom: 12px;
-    }
-
-    .download-message {
-      font-size: 16px;
-      color: rgba(255, 255, 255, 0.7);
-      line-height: 1.6;
-      margin-bottom: 24px;
-    }
-
-    .download-progress {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      height: 8px;
-      overflow: hidden;
+    .download-icon {
+      font-size: 48px;
       margin-bottom: 16px;
     }
 
-    .download-progress-bar {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent-copper), var(--accent-warm));
-      border-radius: 10px;
-      width: 0%;
-      animation: progressPulse 2s ease-in-out infinite;
+    .download-title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #fff;
     }
 
-    @keyframes progressPulse {
-      0%, 100% { width: 30%; opacity: 1; }
-      50% { width: 70%; opacity: 0.8; }
+    .download-file-info {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
     }
 
-    .download-note {
+    .download-file-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .download-file-size {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .download-message {
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .download-message strong {
+      color: var(--accent-copper);
+    }
+
+    .download-notice {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: rgba(212, 165, 116, 0.15);
+      border: 1px solid rgba(212, 165, 116, 0.3);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+
+    .download-notice .notice-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .download-notice span:last-child {
       font-size: 13px;
-      color: rgba(255, 255, 255, 0.5);
-      margin-top: 20px;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.5;
+    }
+
+    .download-start-btn {
+      width: 100%;
+      padding: 16px 24px;
+      background: linear-gradient(135deg, var(--accent-copper), var(--accent-warm));
+      border: none;
+      border-radius: var(--radius-button);
+      font-size: 16px;
+      font-weight: 600;
+      font-family: var(--font-family);
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 16px rgba(212, 165, 116, 0.3);
+    }
+
+    .download-start-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(212, 165, 116, 0.4);
     }
 
     .download-close-btn {
-      margin-top: 24px;
       padding: 12px 32px;
       background: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: var(--radius-button);
-      color: #fff;
+      color: rgba(255, 255, 255, 0.7);
       font-size: 14px;
+      font-family: var(--font-family);
       cursor: pointer;
       transition: all 0.2s ease;
     }
 
     .download-close-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.3);
+      color: #fff;
     }
 
     /* ======================================================
@@ -1197,24 +1238,29 @@
     </div>
   </div>
 
-  <!-- ダウンロードモーダル -->
+  <!-- ダウンロード確認モーダル -->
   <div class="download-overlay" id="download-overlay">
     <div class="download-content">
-      <div class="download-spinner"></div>
-      <h2 class="download-title" id="download-title">ダウンロード準備中...</h2>
-      <p class="download-message" id="download-message">
-        ファイルを準備しています。<br>
-        しばらくお待ちください。
-      </p>
-      <div class="download-progress">
-        <div class="download-progress-bar"></div>
+      <div class="download-icon">📥</div>
+      <h2 class="download-title" id="download-title">ダウンロードの確認</h2>
+      <div class="download-file-info" id="download-file-info">
+        <div class="download-file-name" id="download-file-name">焚き火×Lo-Fi 癒し系</div>
+        <div class="download-file-size" id="download-file-size">ファイルサイズ: 1.27GB</div>
       </div>
-      <p class="download-note">
-        ※ 大容量ファイルのため、Googleドライブの確認画面が<br>
-        別タブで開く場合があります。
+      <p class="download-message" id="download-message">
+        このファイルは大容量のため、<br>
+        <strong>Googleドライブの確認画面</strong>が<br>
+        別タブで開きます。
       </p>
+      <div class="download-notice">
+        <span class="notice-icon">ℹ️</span>
+        <span>確認画面で「このままダウンロード」を<br>クリックしてください</span>
+      </div>
+      <button type="button" class="download-start-btn" id="download-start-btn">
+        ダウンロードを開始
+      </button>
       <button type="button" class="download-close-btn" id="download-close-btn">
-        閉じる
+        キャンセル
       </button>
     </div>
   </div>
@@ -1290,10 +1336,12 @@
         duration: '分',
         comingSoon: '準備中です。もうしばらくお待ちください。',
         download: {
-          title: 'ダウンロード準備中...',
-          message: 'ファイルを準備しています。<br>しばらくお待ちください。',
-          note: '※ 大容量ファイルのため、Googleドライブの確認画面が<br>別タブで開く場合があります。',
-          close: '閉じる'
+          title: 'ダウンロードの確認',
+          fileSize: 'ファイルサイズ',
+          message: 'このファイルは大容量のため、<br><strong>Googleドライブの確認画面</strong>が<br>別タブで開きます。',
+          notice: '確認画面で「このままダウンロード」を<br>クリックしてください',
+          start: 'ダウンロードを開始',
+          cancel: 'キャンセル'
         }
       },
       en: {
@@ -1308,10 +1356,12 @@
         duration: 'min',
         comingSoon: 'Coming soon. Please wait.',
         download: {
-          title: 'Preparing Download...',
-          message: 'Preparing your file.<br>Please wait a moment.',
-          note: '※ Due to large file size, a Google Drive confirmation<br>page may open in a new tab.',
-          close: 'Close'
+          title: 'Confirm Download',
+          fileSize: 'File size',
+          message: 'Due to the large file size,<br>a <strong>Google Drive confirmation page</strong><br>will open in a new tab.',
+          notice: 'Click "Download anyway" on the<br>confirmation page',
+          start: 'Start Download',
+          cancel: 'Cancel'
         }
       }
     };
@@ -1484,66 +1534,78 @@
       return null;
     }
 
-    // ダウンロードモーダル要素
+    // ダウンロード確認モーダル要素
     const downloadOverlay = document.getElementById('download-overlay');
     const downloadTitle = document.getElementById('download-title');
+    const downloadFileName = document.getElementById('download-file-name');
+    const downloadFileSize = document.getElementById('download-file-size');
     const downloadMessage = document.getElementById('download-message');
+    const downloadStartBtn = document.getElementById('download-start-btn');
     const downloadCloseBtn = document.getElementById('download-close-btn');
 
-    function showDownloadModal() {
+    // 現在のダウンロード情報を保存
+    let pendingDownload = null;
+
+    function showDownloadModal(pkg, downloadUrl) {
+      const title = state.currentLang === 'ja' ? pkg.title_ja : pkg.title_en;
+
+      // モーダル内容を更新
       downloadTitle.textContent = t('download.title');
+      downloadFileName.textContent = title;
+      downloadFileSize.textContent = `${t('download.fileSize')}: ${pkg.size || '1.0GB'}`;
       downloadMessage.innerHTML = t('download.message');
-      downloadCloseBtn.textContent = t('download.close');
+      downloadStartBtn.textContent = t('download.start');
+      downloadCloseBtn.textContent = t('download.cancel');
+
+      // 確認画面の注意書きも更新
+      const noticeText = document.querySelector('.download-notice span:last-child');
+      if (noticeText) noticeText.innerHTML = t('download.notice');
+
+      // ダウンロード情報を保存
+      pendingDownload = { pkg, downloadUrl, title };
+
       downloadOverlay.classList.add('active');
     }
 
     function hideDownloadModal() {
       downloadOverlay.classList.remove('active');
+      pendingDownload = null;
+    }
+
+    function startDownload() {
+      if (!pendingDownload) return;
+
+      const { pkg, downloadUrl, title } = pendingDownload;
+
+      // ダウンロードイベントを記録
+      trackEvent('download_click', {
+        package_id: pkg.id,
+        package_title: title,
+        file_size: pkg.size || 'unknown'
+      });
+
+      // モーダルを閉じる
+      hideDownloadModal();
+
+      // 新しいタブでダウンロードリンクを開く
+      window.open(downloadUrl, '_blank');
     }
 
     async function handleDownload(pkgId) {
       const pkg = state.packages.find(p => p.id === pkgId);
       if (!pkg) return;
 
-      const title = state.currentLang === 'ja' ? pkg.title_ja : pkg.title_en;
-
       if (pkg.downloadUrl) {
-        // ダウンロードイベントを記録
-        trackEvent('download_click', {
-          package_id: pkgId,
-          package_title: title,
-          file_size: pkg.size || 'unknown'
-        });
-
-        // ダウンロードモーダルを表示
-        showDownloadModal();
-
-        // 少し遅延してからダウンロードを開始（UX向上）
-        setTimeout(() => {
-          // 新しいタブでダウンロードリンクを開く
-          window.open(pkg.downloadUrl, '_blank');
-        }, 1500);
-
+        // ダウンロード確認モーダルを表示
+        showDownloadModal(pkg, pkg.downloadUrl);
         return;
       }
 
       if (pkg.downloadPath && isFirebaseConfigured() && storage) {
         try {
           const url = await getDownloadURL(ref(storage, pkg.downloadPath));
-          // ダウンロードイベントを記録
-          trackEvent('download_click', {
-            package_id: pkgId,
-            package_title: title,
-            file_size: pkg.size || 'unknown'
-          });
-
-          // ダウンロードモーダルを表示
-          showDownloadModal();
-
-          setTimeout(() => {
-            window.open(url, '_blank');
-          }, 1500);
-
+          // ダウンロード確認モーダルを表示
+          showDownloadModal(pkg, url);
           return;
         } catch (e) {}
       }
@@ -1720,7 +1782,8 @@
       modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
       document.addEventListener('keydown', e => { if (e.key === 'Escape' && modalOverlay.classList.contains('active')) closeModal(); });
       modalDownloadBtn.addEventListener('click', () => { if (currentModalPkgId) handleDownload(currentModalPkgId); });
-      // ダウンロードモーダルの閉じるボタン
+      // ダウンロード確認モーダルのボタン
+      downloadStartBtn.addEventListener('click', startDownload);
       downloadCloseBtn.addEventListener('click', hideDownloadModal);
       downloadOverlay.addEventListener('click', e => { if (e.target === downloadOverlay) hideDownloadModal(); });
     }
