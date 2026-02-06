@@ -1961,28 +1961,33 @@
       })));
     }
 
-    // 初期化
+    // 初期化（高速化版）
     async function init() {
       loadSavedTheme();
       setupEventListeners();
       setupHeroSlider();
-      initializeFirebase();
-      state.isLoading = true;
-      showLoading();
 
+      // ローカルデータを即座に表示（読み込み待ちなし）
+      state.packages = [...LOCAL_PACKAGES];
+      state.filteredPackages = [...LOCAL_PACKAGES];
+      renderCards(state.filteredPackages);
+
+      // Firebaseは裏で初期化（UIをブロックしない）
+      initializeFirebase();
+
+      // Firestoreにデータがあれば、バックグラウンドで更新
       try {
-        const packages = await loadPackages();
-        state.packages = await resolveAllThumbnails(packages);
-        state.filteredPackages = [...state.packages];
-        state.isLoading = false;
-        renderCards(state.filteredPackages);
-      } catch (e) {
-        state.isLoading = false;
-        if (state.packages.length === 0) {
-          state.packages = LOCAL_PACKAGES;
-          state.filteredPackages = [...state.packages];
-          renderCards(state.filteredPackages);
+        if (isFirebaseConfigured() && db) {
+          const packages = await loadPackages();
+          if (packages && packages.length > 0 && packages !== LOCAL_PACKAGES) {
+            const resolved = await resolveAllThumbnails(packages);
+            state.packages = resolved;
+            state.filteredPackages = [...resolved];
+            renderCards(state.filteredPackages);
+          }
         }
+      } catch (e) {
+        // Firebaseエラーは無視（ローカルデータで継続）
       }
     }
 
